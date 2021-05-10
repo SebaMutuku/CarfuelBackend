@@ -1,0 +1,8 @@
+Django==2.2.22
+psycopg2-binary>=2.8
+gunicorn==19.6.0
+crypto~=1.4.1
+cryptography~=3.4.7
+djangorestframework~=3.12.2
+requests~=2.25.1
+PyJWT~=2.0.1

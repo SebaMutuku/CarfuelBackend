@@ -1,0 +1,20 @@
+Metadata-Version: 2.1
+Name: django-rest-framework-auth
+Version: 1.0.0
+Summary: django authentication meets rest framework
+Home-page: http://github.com/lordpeara/django-rest-auth
+Author: lordpeara
+Author-email: lordpeara@gmail.com
+License: MIT
+Keywords: django rest auth rest-framework authentication api
+Platform: UNKNOWN
+Classifier: Framework :: Django
+Classifier: Intended Audience :: Developers
+Classifier: Operating System :: OS Independent
+Requires-Dist: djangorestframework (>=3.7)
+Requires-Dist: Django (<2.0,>=1.11.23) ; python_version < "3.0"
+Requires-Dist: Django (<3.0,>=2.2.13) ; python_version >= "3.0"
+
+UNKNOWN
+
+
