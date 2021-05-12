@@ -90,5 +90,7 @@ class Order(APIView):
     def get(self, request):
         model = Orders.objects.all()
         serializer = OrderSerializer(model, many=True)
-        print(serializer.data)
         return Response({"Message": "Success", "Payload": serializer.data})
+
+    def update():
+        pass

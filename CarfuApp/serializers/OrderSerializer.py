@@ -1,12 +1,15 @@
 import datetime
 
 from rest_framework import serializers
+from yaml.serializer import Serializer
+
 from CarfuApp.models import Orders, Users
 
 
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         fields = (
+            'orderid',
             'ordernumber',
             'customerid',
             'orderamount',
@@ -21,13 +24,19 @@ class OrderSerializer(serializers.ModelSerializer):
     def createOrder(self, data):
         ordernumber = data['ordernumber']
         ordertime = datetime.datetime.now()
-        customerid = Users.objects.get(user_id=data['customerid'])
+
         orderamount = data['orderamount']
         orderlocation = data['orderlocation']
         deliverytime = data['deliverytime']
         orderdetails = data['orderdetails']
         orderstatus = data['orderstatus']
-        deliveryagent = Users.objects.get(user_id=data['deliveryagent'])
+        try:
+            deliveryagent = Users.objects.get(user_id=data['deliveryagent'])
+            customerid = Users.objects.get(user_id=data['customerid'])
+        except Users.DoesNotExist:
+            return Serializer.error()
+
+
         order = Orders.objects.create(orderstatus=orderstatus,
                                       orderdetails=orderdetails,
                                       ordertime=ordertime, orderamount=orderamount,
