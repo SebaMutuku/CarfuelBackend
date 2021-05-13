@@ -1,5 +1,3 @@
-
-
 import jwt
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
@@ -9,7 +7,11 @@ from rest_framework.pagination import *
 
 from CarfuApp.models import Users, Roles, Orders, Registeredvehicles, AddUsersIntoDb
 from CarfuelBackEnd import settings
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta
+import jwt
+from rest_framework.response import Response
+
+
 
 class LoginSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,47 +21,40 @@ class LoginSerializer(serializers.ModelSerializer):
         )
         model = Users
 
-    @staticmethod
-    def checkLoginCredentials(data):
-        email = data['username']
+    def authenticateUser(self, data):
+        username = data['username']
         password = data['password']
-        print("Invalid user", email, password)
-
+        token=None
         try:
-            user = Users.objects.get(email__exact=email)
-            encoded_password = password
+            user = Users.objects.get(username=username)
             if user is not None:
                 if user.is_active:
                     # if not user.logged_in != False:
-                    if encoded_password == user.password:
-                        secret_key = settings.SECRET_KEY
-                        expirydate = datetime
-                        claims = {
-                            "id": user.user_id,
-                            "subject": user.email,
-                            "exp": expirydate,
-                            "roleId": user.roleid
-                        }
-                        token = jwt.encode(claims, secret_key, algorithm='HS256')  # [1:].replace('\'', "")
-                        token="oaoaoooaoaoo"
-                        user.token = token
-                        user.logged_in = True
-                        user.last_login = datetime.today().strftime("%Y-%m-%d %H:%M")
-                        user.save()
+                    if password == user.password:
+                       secret_key=settings.SECRET_KEY
+                       expirydate = datetime.now() + timedelta(days=1)
+                       claims={
+                           "id": user.user_id,
+                           "subject": user.username,
+                           "exp": expirydate,
+                           "roleId": user.roleid.roleid
+                       }
+                       print("Roles",user.roleid.roleid)
+                       token=jwt.encode(claims, secret_key, algorithm='HS256')
+                       user.last_login=datetime.today().strftime("%Y-%m-%d %H:%M")
+                       user.token=token
+                       if(user.save()):
+                           return token
+                       return token
                     else:
-                        raise serializers.ValidationError({"Message": "Invalid login Credentials", "token": ""})
-                # else:
-                #     raise serializers.ValidationError(
-                #         {"Message": "User Already Logged in.Logout First", "token": ""})
+                        raise serializers.ValidationError({"message": "Invalid Credentials", "token": ""})
                 else:
-                    raise serializers.ValidationError({"Message": "User is Inactive", "token": ""})
+                    raise serializers.ValidationError({"message": "Inactive User", "token": ""})
 
             else:
-                raise serializers.ValidationError({"Message": "Invalid login Credentials", "token": ""})
-
+                raise serializers.ValidationError({"message": "Invalid username", "token": ""})
         except ObjectDoesNotExist:
-            token = None
-        return token
+            return token
 
 
 class RegisterSerializer(serializers.ModelSerializer, PageNumberPagination):

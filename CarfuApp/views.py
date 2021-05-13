@@ -12,6 +12,9 @@ from . import models
 from CarfuApp.serializers.AuthenticationSerializer import RegisterSerializer, DecodeToken, LoginSerializer
 from CarfuApp.serializers.OrderSerializer import OrderSerializer
 from .models import Orders
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
+from rest_framework.response import Response
 
 
 class Register(views.APIView):
@@ -26,12 +29,11 @@ class Register(views.APIView):
         if serializer.is_valid(raise_exception=True):
             user = serializer.addUser(request.data)
             if user:
-                return Response({"User": serializer.data,
-                                 "Message": "Successfully created user ['{}']".format(
-                                     request.data.get('email'))},
+                return Response({"User": serializer.data, "Message": "Successfully created user ['{}']".format(
+                    request.data.get('email'))},
                                 status=status.HTTP_200_OK)
             else:
-                return Response({"Invalid login credentials"},
+                return Response({serializer.error},
                                 status=status.HTTP_401_UNAUTHORIZED)
 
         else:
@@ -50,17 +52,16 @@ class Login(APIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         if serializer.is_valid():
-            token = serializer.checkLoginCredentials(request.data)
-            if token is not None:
-                response = {"Message": "Successfully Logged In ", "token": token}
+            token = serializer.authenticateUser(request.data)
+            if token:
+                response = {"message": "Successfully Logged In ", "token": token}
                 return Response(response, status=status.HTTP_200_OK)
             else:
-                response = {"Message": "Invalid Login Credentials", "token": None}
-
+                response = {"message": serializer.errors, "token": ""}
                 return Response(response, status=status.HTTP_200_OK)
         else:
-            response = serializer.errors
-            return Response(response)
+            response = {"message": serializer.errors, "Token": ""}
+            return Response(response, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class Order(APIView):
@@ -77,20 +78,20 @@ class Order(APIView):
         if serializer.is_valid():
             order = serializer.createOrder(request.data)
             if order:
-                response = {"Message": "Order Successful", "OrderDetails": serializer.data}
+                response = {"message": "Order Successful", "OrderDetails": serializer.data}
                 return Response(response, status=status.HTTP_200_OK)
             else:
-                response = {"Message": "Order Failed", "OrderDetails": None}
+                response = {"message": "Order Failed", "OrderDetails": None}
                 return Response(response, status=status.HTTP_417_EXPECTATION_FAILED)
 
         else:
-            response = {"Message": "Failed", "OrderDetails": None}
+            response = {"message": "Failed", "OrderDetails": None}
             return Response(response, status=status.HTTP_200_OK)
 
     def get(self, request):
         model = Orders.objects.all()
         serializer = OrderSerializer(model, many=True)
-        return Response({"Message": "Success", "responsePayload": serializer.data})
+        return Response({"message": "Success", "responsePayload": serializer.data})
 
     def update():
         pass
