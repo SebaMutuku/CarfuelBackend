@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '2ttpza*b-b6%t4(r@8gp57yee9zwi$o)v*hbrrb*m=b36ji_-2'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG =False
 
 ALLOWED_HOSTS = ['carfueldjango.herokuapp.com','localhost']
 ENCRYPTION_BLOCK_SIZE = 32
