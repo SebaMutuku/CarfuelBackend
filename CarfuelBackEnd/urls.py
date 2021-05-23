@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^api/users/login', views.Login.as_view(), name='Login'),
     url('api/users/register', views.Register.as_view(), name='Register'),
     url('api/orders/createOrder', views.Order.as_view(), name='CreateOrder'),
+    # url('api/users/sendSMS', views.SendSMS.as_view(), name='CreateOrder'),
     # url('api/users/listusers', views.FetchUsers.as_view(), name='ListUsers'),
     # url('api/users/logout', views.Logout.as_view(), name='Logout'),
     # url('api/users/findbymail', views.FindUserByEmail.as_view(), name='FindUsersByEmail'),

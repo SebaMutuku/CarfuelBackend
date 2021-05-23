@@ -1,3 +1,6 @@
+import json
+import random
+
 from django.shortcuts import render
 from rest_framework import status, views
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
@@ -8,6 +11,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from CarfuelBackEnd import settings
 from . import models
 from CarfuApp.serializers.AuthenticationSerializer import RegisterSerializer, DecodeToken, LoginSerializer
 from CarfuApp.serializers.OrderSerializer import OrderSerializer
@@ -15,6 +20,9 @@ from .models import Orders
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
+from twilio.rest import Client
+import messagebird
+import requests
 
 
 class Register(views.APIView):
@@ -95,3 +103,10 @@ class Order(APIView):
 
     def update():
         pass
+
+
+
+
+
+
+

@@ -21,6 +21,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '2ttpza*b-b6%t4(r@8gp57yee9zwi$o)v*hbrrb*m=b36ji_-2'
+TWILIO_ACCOUNT_SID='AC52398facebf5b22034d4c0f3ae7f8742'
+TWILIO_ACCOUNT_TOKEN='db6323f32936c7746365628de6d03570'
+TWILIO_PHONE_NUMBER='+14843263703'
+MESSAGE_BIRD_ACCESS_KEY='0Z1cpHoc0lYlSYvMkPXPQGTme'
+MESSAGE_BIRD_URL='https://rest.messagebird.com/messages'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

@@ -6,6 +6,7 @@ from rest_framework import serializers
 from rest_framework.pagination import *
 
 from CarfuApp.models import Users, Roles, Orders, Registeredvehicles, AddUsersIntoDb
+from CarfuApp.utils import SMS
 from CarfuelBackEnd import settings
 from datetime import datetime, timedelta
 import jwt
@@ -81,6 +82,7 @@ class RegisterSerializer(serializers.ModelSerializer, PageNumberPagination):
                     raise serializers.ValidationError(
                         {"Message": "User with email " + "[" + str(data['email']) + "]" + " already exists "})
                 else:
+                    success=SMS.SendSMS.sendMessageBirdSMS(data,generateOtp())
                     password = data['password']
                     print("Encrypted password", password)
                     email = data.get('email')
@@ -104,6 +106,9 @@ class RegisterSerializer(serializers.ModelSerializer, PageNumberPagination):
                                       'email': user.email,
                                       'roleid': role.rolename}
                     return entityResponse
+
+        def generateOtp():
+            return str(random.randint(1000, 9999))
 
 
 class DecodeToken:
@@ -146,3 +151,5 @@ class DecodeToken:
             except UserModel.DoesNotExist:
                 loggedinuser = None
         return loggedinuser
+
+
