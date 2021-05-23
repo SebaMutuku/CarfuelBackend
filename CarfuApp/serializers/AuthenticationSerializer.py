@@ -39,7 +39,6 @@ class LoginSerializer(serializers.ModelSerializer):
                            "exp": expirydate,
                            "roleId": user.roleid.roleid
                        }
-                       print("Roles",user.roleid.roleid)
                        token=jwt.encode(claims, secret_key, algorithm='HS256')
                        user.last_login=datetime.today().strftime("%Y-%m-%d %H:%M")
                        user.token=token
@@ -132,7 +131,7 @@ class DecodeToken:
                     username = user_data['subject']
                     role = user_data['roleId']
                     # print("token name:...." + str(role))
-                    db_user = UserModel.objects.get(email__iexact=username)
+                    db_user = Users.objects.get(email__iexact=username)
                     db_token = db_user.token[1:].replace("\'", "")
                     passed_token = str(token)[2:].replace("\'", "")
                     if db_token == passed_token:
