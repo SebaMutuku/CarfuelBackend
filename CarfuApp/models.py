@@ -3,6 +3,7 @@ from xmlrpc.client import DateTime
 from django.contrib.auth.base_user import BaseUserManager
 from django.db import models
 import datetime
+from django.utils import timezone
 
 
 class AuthGroup(models.Model):
@@ -41,7 +42,7 @@ class AuthUser(models.Model):
     username = models.CharField(unique=True, max_length=150)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=150)
-    email = models.CharField(max_length=254)
+    phonenumber = models.CharField(max_length=20)
     is_staff = models.BooleanField()
     is_active = models.BooleanField()
     date_joined = models.DateTimeField()
@@ -257,11 +258,11 @@ class Users(models.Model):
     user_id = models.AutoField(primary_key=True)
     username = models.CharField(unique=True, max_length=50)
     password = models.CharField(max_length=50)
-    email = models.CharField(unique=True, max_length=255, blank=True, null=True)
+    phonenumber = models.CharField(unique=False, max_length=255, blank=True, null=True)
     created_on = models.DateTimeField()
     last_login = models.DateTimeField(blank=True, null=True)
-    is_admin = models.BooleanField()
-    is_active = models.BooleanField()
+    is_admin = models.BooleanField(default=False, null=False)
+    is_active = models.BooleanField(default=True, null=False)
     token = models.CharField(max_length=255, blank=True, null=True)
     roleid = models.ForeignKey(Roles, models.DO_NOTHING, db_column='roleid', blank=True, null=True)
     is_agent = models.BooleanField(blank=True, null=True)
@@ -272,41 +273,36 @@ class Users(models.Model):
 
 
 class AddUsersIntoDb(BaseUserManager):
-    def create_user(self, email, password, **extra_fields):
-        if not email:
-            raise ValueError("Email is required")
-        else:
-            user = Users.objects.create(email=email,
-                                        username=extra_fields.get('username'),
-                                        roleid=extra_fields.get('roleid'), created_on=datetime.datetime.now(),
-                                        is_admin=extra_fields.get('is_admin'),
-                                        is_agent=extra_fields.get('is_agent'),is_active=True,password=password)
+    def create_user(self, password, **extra_fields):
+        user = Users.objects.create(username=extra_fields.get('username'),
+                                    roleid=extra_fields.get('roleid'),
+                                    created_on=datetime.datetime.now(tz=timezone.utc),
+                                    is_admin=extra_fields.get('is_admin'),
+                                    is_agent=extra_fields.get('is_agent'), is_active=True, password=password,
+                                    phonenumber=extra_fields.get('phonenumber'))
         return user
 
-    def create_superuser(self, email, password=None, username=None, roleId=None):
-        user = self.create_user(email, password=password, username=username, is_active=True, is_admin=True,
-                                roleid=roleId)
+    def create_superuser(self, password=None, username=None, roleId=None, phonenumber=None):
+        user = self.create_user(password=password, username=username, is_active=True, is_admin=True,
+                                roleid=roleId, phonenumber=phonenumber)
         user.is_agent = False
         user.is_admin = True
-        user.created_on = datetime.datetime.now()
+        user.created_on = datetime.datetime.now(tz=timezone.utc)
         user.save()
-        print(user)
         return user
 
-    def create_normal_user(self, email, password=None, username=None):
-        user = self.create_user(email, password=password, username=username, roleid=3)
-        user.created_on = datetime.datetime.now()
+    def create_normal_user(self, password=None, username=None, roleId=None, phonenumber=None):
+        user = self.create_user(password=password, username=username, roleid=roleId, phonenumber=phonenumber)
+        user.created_on = datetime.datetime.now(tz=timezone.utc)
         user.is_agent = False
         user.is_admin = False
-        print(user)
         user.save()
         return user
 
-    def create_agent(self, email, password=None, username=None, ):
-        user = self.create_user(email, password=password, username=username, roleid=2)
+    def create_agent(self, password=None, username=None, phonenumber=None, roleId=None):
+        user = self.create_user(password=password, username=username, roleid=roleId, phonenumber=phonenumber)
         user.is_agent = True
         user.is_admin = False
-        user.created_on = datetime.datetime.now()
-        print(user)
+        user.created_on = datetime.datetime.now(tz=timezone.utc)
         user.save()
         return user

@@ -1,6 +1,3 @@
-import json
-import random
-
 from django.shortcuts import render
 from rest_framework import status, views
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
@@ -20,8 +17,6 @@ from .models import Orders
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
-import messagebird
-import requests
 
 
 class Register(views.APIView):
@@ -37,7 +32,7 @@ class Register(views.APIView):
             user = serializer.addUser(request.data)
             if user:
                 return Response({"User": serializer.data, "Message": "Successfully created user ['{}']".format(
-                    request.data.get('email'))},
+                    request.data.get('username'))},
                                 status=status.HTTP_200_OK)
             else:
                 return Response({serializer.error},
@@ -102,10 +97,3 @@ class Order(APIView):
 
     def update():
         pass
-
-
-
-
-
-
-

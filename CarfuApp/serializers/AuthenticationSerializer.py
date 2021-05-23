@@ -13,11 +13,10 @@ import jwt
 from rest_framework.response import Response
 
 
-
 class LoginSerializer(serializers.ModelSerializer):
     class Meta:
         fields = (
-            'email',
+            'username',
             'password'
         )
         model = Users
@@ -25,27 +24,27 @@ class LoginSerializer(serializers.ModelSerializer):
     def authenticateUser(self, data):
         username = data['username']
         password = data['password']
-        token=None
+        token = None
         try:
             user = Users.objects.get(username=username)
             if user is not None:
                 if user.is_active:
                     # if not user.logged_in != False:
                     if password == user.password:
-                       secret_key=settings.SECRET_KEY
-                       expirydate = datetime.now() + timedelta(days=1)
-                       claims={
-                           "id": user.user_id,
-                           "subject": user.username,
-                           "exp": expirydate,
-                           "roleId": user.roleid.roleid
-                       }
-                       token=jwt.encode(claims, secret_key, algorithm='HS256')
-                       user.last_login=datetime.today().strftime("%Y-%m-%d %H:%M")
-                       user.token=token
-                       if(user.save()):
-                           return token
-                       return token
+                        secret_key = settings.SECRET_KEY
+                        expirydate = datetime.now() + timedelta(days=1)
+                        claims = {
+                            "id": user.user_id,
+                            "subject": user.username,
+                            "exp": expirydate,
+                            "roleId": user.roleid.roleid
+                        }
+                        token = jwt.encode(claims, secret_key, algorithm='HS256')
+                        user.last_login = datetime.today().strftime("%Y-%m-%d %H:%M")
+                        user.token = token
+                        if (user.save()):
+                            return token
+                        return token
                     else:
                         raise serializers.ValidationError({"message": "Invalid Credentials", "token": ""})
                 else:
@@ -62,53 +61,42 @@ class RegisterSerializer(serializers.ModelSerializer, PageNumberPagination):
         model = Users
         fields = (
             'user_id',
-            'email',
             'username',
-            'roleid'
         )
 
     def addUser(self, data):
         if data['password'] is None:
             raise serializers.ValidationError({"Message": "Passwords do not match"})
         else:
-            from django.core.validators import validate_email
-            email = validate_email(data['email'])
-            if email is False:
-                raise serializers.ValidationError({"Message": "Please enter a valid email"})
+            username_exists = Users.objects.filter(username=data['username'])
+            if username_exists:
+                raise serializers.ValidationError(
+                    {"Message": "User with username " + "[" + str(data['username']) + "]" + " already exists "})
             else:
-                email_exist = Users.objects.filter(email=data['email'])
+                success = SMS.SendSMS.sendMessageBirdSMS(data=data)
+                print("SMS response",success)
+                password = data['password']
+                print("Encrypted password", password)
+                phonenumber = data.get('phonenumber')
+                username = data['username']
+                role = Roles.objects.get(roleid=3)
+                print("RoleName is: ", role.rolename)
 
-                if email_exist:
-                    raise serializers.ValidationError(
-                        {"Message": "User with email " + "[" + str(data['email']) + "]" + " already exists "})
+                if role.rolename == "Admin":
+                    user = AddUsersIntoDb().create_superuser(password=password, roleId=role,
+                                                             username=username,phonenumber=phonenumber)
+                elif role.rolename == "Agent":
+                    user = AddUsersIntoDb().create_staffuser(
+                        password=password,
+                        username=username, roleId=role,phonenumber=phonenumber)
                 else:
-                    success=SMS.SendSMS.sendMessageBirdSMS(data,generateOtp())
-                    password = data['password']
-                    print("Encrypted password", password)
-                    email = data.get('email')
-                    username = data['username']
-                    role = Roles.objects.get(roleid=data['roleId'])
-                    print("RoleName is: ", role.rolename)
-
-                    if role.rolename == "Admin":
-                        user = AddUsersIntoDb().create_superuser(email=email, password=password, roleId=role,
-                                                                 username=username)
-                    elif role.rolename == "Agent":
-                        user = AddUsersIntoDb().create_staffuser(email=email,
-                                                                 password=password,
-                                                                 username=username, roleId=role)
-                    else:
-                        user = AddUsersIntoDb().create_normal_user(email=email,
-                                                                   password=password,
-                                                                   username=username, roleId=role)
-                    entityResponse = {'username': user.username,
-                                      'user_id': user.user_id,
-                                      'email': user.email,
-                                      'roleid': role.rolename}
-                    return entityResponse
-
-        def generateOtp():
-            return str(random.randint(1000, 9999))
+                    user = AddUsersIntoDb().create_normal_user(
+                        password=password,
+                        username=username, roleId=role,phonenumber=phonenumber)
+                entityResponse = {'username': user.username,
+                                  'user_id': user.user_id,
+                                  'roleid': role.rolename}
+                return entityResponse
 
 
 class DecodeToken:
@@ -136,7 +124,7 @@ class DecodeToken:
                     username = user_data['subject']
                     role = user_data['roleId']
                     # print("token name:...." + str(role))
-                    db_user = Users.objects.get(email__iexact=username)
+                    db_user = Users.objects.get(username=username)
                     db_token = db_user.token[1:].replace("\'", "")
                     passed_token = str(token)[2:].replace("\'", "")
                     if db_token == passed_token:
@@ -151,5 +139,3 @@ class DecodeToken:
             except UserModel.DoesNotExist:
                 loggedinuser = None
         return loggedinuser
-
-
