@@ -97,6 +97,6 @@ DATABASES['default'].update(prod_db)
 heroku config:set     DISABLE_COLLECTSTATIC=1  
 Setting DISABLE_COLLECTSTATIC and restarting
     
-17. git push heroku master
+17. git push heroku main 
 18. heroku run python manage.py migrate
 

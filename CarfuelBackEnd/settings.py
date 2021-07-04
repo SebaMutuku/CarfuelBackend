@@ -30,7 +30,7 @@ MESSAGE_BIRD_URL='https://rest.messagebird.com/messages'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['carfueldjango.herokuapp.com','localhost']
+ALLOWED_HOSTS = ['carfueldjango.herokuapp.com','localhost','localhost:3000']
 ENCRYPTION_BLOCK_SIZE = 32
 PADDING = '{'
 USER_PASS_KEY = 'pEp96PsFTvfNGUNttFWqObLgKeqb9j9+sIBo/B98kZA='
