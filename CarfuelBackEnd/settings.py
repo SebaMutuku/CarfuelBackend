@@ -21,16 +21,16 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '2ttpza*b-b6%t4(r@8gp57yee9zwi$o)v*hbrrb*m=b36ji_-2'
-TWILIO_ACCOUNT_SID='AC52398facebf5b22034d4c0f3ae7f8742'
-TWILIO_ACCOUNT_TOKEN='db6323f32936c7746365628de6d03570'
-TWILIO_PHONE_NUMBER='+14843263703'
-MESSAGE_BIRD_ACCESS_KEY='0Z1cpHoc0lYlSYvMkPXPQGTme'
-MESSAGE_BIRD_URL='https://rest.messagebird.com/messages'
+TWILIO_ACCOUNT_SID = 'AC52398facebf5b22034d4c0f3ae7f8742'
+TWILIO_ACCOUNT_TOKEN = 'db6323f32936c7746365628de6d03570'
+TWILIO_PHONE_NUMBER = '+14843263703'
+MESSAGE_BIRD_ACCESS_KEY = '0Z1cpHoc0lYlSYvMkPXPQGTme'
+MESSAGE_BIRD_URL = 'https://rest.messagebird.com/messages'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['carfueldjango.herokuapp.com','localhost','localhost:3000']
+ALLOWED_HOSTS = ['carfueldjango.herokuapp.com', 'localhost', 'localhost:3000']
 ENCRYPTION_BLOCK_SIZE = 32
 PADDING = '{'
 USER_PASS_KEY = 'pEp96PsFTvfNGUNttFWqObLgKeqb9j9+sIBo/B98kZA='
@@ -66,10 +66,18 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'CarfuelBackEnd.urls'
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_ALLOW_ALL = True  # If this is used then `CORS_ORIGIN_WHITELIST` will not have any effect
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3000',
+]  # If this is used, then not need to use `CORS_ORIGIN_ALLOW_ALL = True`
+CORS_ORIGIN_REGEX_WHITELIST = [
+    'http://localhost:3000',
+]
 REST_USE_JWT = True
 # AUTH_USER_MODEL = 'CarfuApp.Users'
 # AUTH_ROLE_MODEL = 'CarfuApp.Roles'
@@ -163,5 +171,5 @@ STATICFILES_DIRS = (
 #  Add configuration for static files storage using whitenoise
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-prod_db  =  dj_database_url.config(conn_max_age=500)
+prod_db = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(prod_db)
