@@ -28,7 +28,7 @@ MESSAGE_BIRD_ACCESS_KEY = '0Z1cpHoc0lYlSYvMkPXPQGTme'
 MESSAGE_BIRD_URL = 'https://rest.messagebird.com/messages'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # ALLOWED_HOSTS = ['carfueldjango.herokuapp.com', 'localhost:3000', ]
 ALLOWED_HOSTS=['*']

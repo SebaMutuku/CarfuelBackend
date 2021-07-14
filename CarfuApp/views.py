@@ -27,6 +27,7 @@ class Register(views.APIView):
     pagination_class = PageNumberPagination
 
     def post(self, request):
+        print("Received Request  ",request)
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid(raise_exception=True):
             user = serializer.addUser(request.data)
