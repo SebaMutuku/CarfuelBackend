@@ -61,10 +61,10 @@ class Login(APIView):
                 response = {"message": "Successfully Logged In ", "token": token}
                 return Response(response, status=status.HTTP_200_OK)
             else:
-                response = {"message": serializer.errors, "token": ""}
-                return Response(response, status=status.HTTP_200_OK)
+                response = {"message": "invalid Login Credentials", "token": token}
+                return Response(response, status=status.HTTP_401_UNAUTHORIZED)
         else:
-            response = {"message": serializer.errors, "Token": ""}
+            response = {"message":"An Error ocurred", "token": token}
             return Response(response, status=status.HTTP_401_UNAUTHORIZED)
 
 
