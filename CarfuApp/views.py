@@ -52,6 +52,7 @@ class Login(APIView):
     parser_classes(JSONParser, )
 
     def post(self, request):
+        print("Received Request  ",request)
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         if serializer.is_valid():
