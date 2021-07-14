@@ -41,6 +41,12 @@ class Register(views.APIView):
 
         else:
             return Response(serializer.errors, status.HTTP_401_UNAUTHORIZED)
+    def get(self):
+        model = Users.objects.all()
+        serializer = RegisterSerializer(model, many=True)
+        return Response({"message": "Success", "responsePayload": serializer.data})
+
+
 
 
 class Login(APIView):
