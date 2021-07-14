@@ -59,12 +59,15 @@ class Login(APIView):
             token = serializer.authenticateUser(request.data)
             if token:
                 response = {"message": "Successfully Logged In ", "token": token}
+                print("Response to API ", response)
                 return Response(response, status=status.HTTP_200_OK)
             else:
                 response = {"message": "invalid Login Credentials", "token": token}
+                print("Response to API ", response)
                 return Response(response, status=status.HTTP_401_UNAUTHORIZED)
         else:
             response = {"message":"An Error ocurred", "token": token}
+            print("Response to API ",response)
             return Response(response, status=status.HTTP_401_UNAUTHORIZED)
 
 
