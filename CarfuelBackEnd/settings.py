@@ -30,7 +30,8 @@ MESSAGE_BIRD_URL = 'https://rest.messagebird.com/messages'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['carfueldjango.herokuapp.com', 'localhost', 'localhost:3000']
+# ALLOWED_HOSTS = ['carfueldjango.herokuapp.com', 'localhost:3000', ]
+ALLOWED_HOSTS=['*']
 ENCRYPTION_BLOCK_SIZE = 32
 PADDING = '{'
 USER_PASS_KEY = 'pEp96PsFTvfNGUNttFWqObLgKeqb9j9+sIBo/B98kZA='
@@ -70,14 +71,29 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'CarfuelBackEnd.urls'
-CORS_ORIGIN_ALLOW_ALL = True  # If this is used then `CORS_ORIGIN_WHITELIST` will not have any effect
+CORS_ORIGIN_ALLOW_ALL = True
+ALLOWED_HOSTS=['*']
 CORS_ALLOW_CREDENTIALS = True
-CORS_ORIGIN_WHITELIST = [
-    'http://localhost:3000',
-]  # If this is used, then not need to use `CORS_ORIGIN_ALLOW_ALL = True`
-CORS_ORIGIN_REGEX_WHITELIST = [
-    'http://localhost:3000',
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
 ]
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
 REST_USE_JWT = True
 # AUTH_USER_MODEL = 'CarfuApp.Users'
 # AUTH_ROLE_MODEL = 'CarfuApp.Roles'
