@@ -66,16 +66,16 @@ CREATE TABLE public.registeredvehicles
 5. pip install gunicorn dj-database-url whitenoise psycopg2
 6. pip freeze > requirements.txt
 7. ROJECT_ROOT   =   os.path.join(os.path.abspath(__file__))
-STATIC_ROOT  =   os.path.join(PROJECT_ROOT, 'staticfiles')
+STATIC_ROOT  =   os.path.join(BASEDIR, 'staticfiles')
 STATIC_URL = '/static/'
 
 # Extra lookup directories for collectstatic to find static files
 STATICFILES_DIRS = (
-    os.path.join(PROJECT_ROOT, 'static'),
+    os.path.join(BASEDIR, 'static'),
 )
 
 #  Add configuration for static files storage using whitenoise
-STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 8.add to middleware  MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
