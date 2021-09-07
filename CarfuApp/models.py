@@ -15,8 +15,8 @@ class AuthGroup(models.Model):
 
 
 class AuthGroupPermissions(models.Model):
-    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
-    permission = models.ForeignKey('AuthPermission', models.DO_NOTHING)
+    group = models.OneToOneField(AuthGroup, models.DO_NOTHING)
+    permission = models.OneToOneField('AuthPermission', models.DO_NOTHING)
 
     class Meta:
         managed = False
@@ -26,7 +26,7 @@ class AuthGroupPermissions(models.Model):
 
 class AuthPermission(models.Model):
     name = models.CharField(max_length=255)
-    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING)
+    content_type = models.OneToOneField('DjangoContentType', models.DO_NOTHING)
     codename = models.CharField(max_length=100)
 
     class Meta:
@@ -53,8 +53,8 @@ class AuthUser(models.Model):
 
 
 class AuthUserGroups(models.Model):
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
+    user = models.OneToOneField(AuthUser, models.DO_NOTHING)
+    group = models.OneToOneField(AuthGroup, models.DO_NOTHING)
 
     class Meta:
         managed = False
@@ -63,8 +63,8 @@ class AuthUserGroups(models.Model):
 
 
 class AuthUserUserPermissions(models.Model):
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-    permission = models.ForeignKey(AuthPermission, models.DO_NOTHING)
+    user = models.OneToOneField(AuthUser, models.DO_NOTHING)
+    permission = models.OneToOneField(AuthPermission, models.DO_NOTHING)
 
     class Meta:
         managed = False
@@ -75,7 +75,7 @@ class AuthUserUserPermissions(models.Model):
 class AuthtokenToken(models.Model):
     key = models.CharField(primary_key=True, max_length=40)
     created = models.DateTimeField()
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING, unique=True)
+    user = models.OneToOneField(AuthUser, models.DO_NOTHING, unique=True)
 
     class Meta:
         managed = False
@@ -88,8 +88,8 @@ class DjangoAdminLog(models.Model):
     object_repr = models.CharField(max_length=200)
     action_flag = models.SmallIntegerField()
     change_message = models.TextField()
-    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING, blank=True, null=True)
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
+    content_type = models.OneToOneField('DjangoContentType', models.DO_NOTHING, blank=True, null=True)
+    user = models.OneToOneField(AuthUser, models.DO_NOTHING)
 
     class Meta:
         managed = False
@@ -131,13 +131,13 @@ class Oauth2ProviderAccesstoken(models.Model):
     token = models.CharField(unique=True, max_length=255)
     expires = models.DateTimeField()
     scope = models.TextField()
-    application = models.ForeignKey('Oauth2ProviderApplication', models.DO_NOTHING, blank=True, null=True)
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING, blank=True, null=True)
+    application = models.OneToOneField('Oauth2ProviderApplication', models.DO_NOTHING, blank=True, null=True)
+    user = models.OneToOneField(AuthUser, models.DO_NOTHING, blank=True, null=True)
     created = models.DateTimeField()
     updated = models.DateTimeField()
-    source_refresh_token = models.ForeignKey('Oauth2ProviderRefreshtoken', models.DO_NOTHING, unique=True, blank=True,
+    source_refresh_token = models.OneToOneField('Oauth2ProviderRefreshtoken', models.DO_NOTHING, unique=True, blank=True,
                                              null=True)
-    id_token = models.ForeignKey('Oauth2ProviderIdtoken', models.DO_NOTHING, unique=True, blank=True, null=True)
+    id_token = models.OneToOneField('Oauth2ProviderIdtoken', models.DO_NOTHING, unique=True, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -152,7 +152,7 @@ class Oauth2ProviderApplication(models.Model):
     authorization_grant_type = models.CharField(max_length=32)
     client_secret = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING, blank=True, null=True)
+    user = models.OneToOneField(AuthUser, models.DO_NOTHING, blank=True, null=True)
     skip_authorization = models.BooleanField()
     created = models.DateTimeField()
     updated = models.DateTimeField()
@@ -169,8 +169,8 @@ class Oauth2ProviderGrant(models.Model):
     expires = models.DateTimeField()
     redirect_uri = models.TextField()
     scope = models.TextField()
-    application = models.ForeignKey(Oauth2ProviderApplication, models.DO_NOTHING)
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
+    application = models.OneToOneField(Oauth2ProviderApplication, models.DO_NOTHING)
+    user = models.OneToOneField(AuthUser, models.DO_NOTHING)
     created = models.DateTimeField()
     updated = models.DateTimeField()
     code_challenge = models.CharField(max_length=128)
@@ -190,8 +190,8 @@ class Oauth2ProviderIdtoken(models.Model):
     scope = models.TextField()
     created = models.DateTimeField()
     updated = models.DateTimeField()
-    application = models.ForeignKey(Oauth2ProviderApplication, models.DO_NOTHING, blank=True, null=True)
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING, blank=True, null=True)
+    application = models.OneToOneField(Oauth2ProviderApplication, models.DO_NOTHING, blank=True, null=True)
+    user = models.OneToOneField(AuthUser, models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -201,9 +201,9 @@ class Oauth2ProviderIdtoken(models.Model):
 class Oauth2ProviderRefreshtoken(models.Model):
     id = models.BigAutoField(primary_key=True)
     token = models.CharField(max_length=255)
-    access_token = models.ForeignKey(Oauth2ProviderAccesstoken, models.DO_NOTHING, unique=True, blank=True, null=True)
-    application = models.ForeignKey(Oauth2ProviderApplication, models.DO_NOTHING)
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
+    access_token = models.OneToOneField(Oauth2ProviderAccesstoken, models.DO_NOTHING, unique=True, blank=True, null=True)
+    application = models.OneToOneField(Oauth2ProviderApplication, models.DO_NOTHING)
+    user = models.OneToOneField(AuthUser, models.DO_NOTHING)
     created = models.DateTimeField()
     updated = models.DateTimeField()
     revoked = models.DateTimeField(blank=True, null=True)
@@ -218,7 +218,7 @@ class Orders(models.Model):
     orderid = models.AutoField(primary_key=True)
     ordernumber = models.CharField(max_length=50)
     ordertime = models.DateTimeField()
-    customerid = models.ForeignKey('Users', models.DO_NOTHING, db_column='customerid')
+    customerid = models.OneToOneField('Users', models.DO_NOTHING, db_column='customerid')
     orderamount = models.FloatField()
     orderlocation = models.CharField(max_length=255)
     deliverytime = models.DateTimeField(blank=True, null=True)
@@ -238,7 +238,7 @@ class Registeredvehicles(models.Model):
     carcolor = models.CharField(max_length=50)
     carregnumber = models.CharField(max_length=50)
     registeredon = models.DateTimeField()
-    userid = models.ForeignKey('Users', models.DO_NOTHING, db_column='userid', blank=True, null=True)
+    userid = models.OneToOneField('Users', models.DO_NOTHING, db_column='userid', blank=True, null=True)
 
     class Meta:
         managed = False
@@ -264,7 +264,7 @@ class Users(models.Model):
     is_admin = models.BooleanField(default=False, null=False)
     is_active = models.BooleanField(default=True, null=False)
     token = models.CharField(max_length=255, blank=True, null=True)
-    roleid = models.ForeignKey(Roles, models.DO_NOTHING, db_column='roleid', blank=True, null=True)
+    roleid = models.OneToOneField(Roles, models.DO_NOTHING, db_column='roleid', blank=True, null=True)
     is_agent = models.BooleanField(blank=True, null=True)
 
     class Meta:
