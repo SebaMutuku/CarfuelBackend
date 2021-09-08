@@ -24,7 +24,6 @@ class OrderSerializer(serializers.ModelSerializer):
 	def createOrder(self, data):
 		ordernumber = data['ordernumber']
 		ordertime = datetime.datetime.now()
-		
 		orderamount = data['orderamount']
 		orderlocation = data['orderlocation']
 		deliverytime = data['deliverytime']

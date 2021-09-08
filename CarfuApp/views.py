@@ -17,6 +17,7 @@ from .models import Orders
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
+from .models import Users
 
 
 class Register(views.APIView):
@@ -40,11 +41,21 @@ class Register(views.APIView):
                                 status=status.HTTP_401_UNAUTHORIZED)
 
         else:
-            return Response(serializer.errors, status.HTTP_401_UNAUTHORIZED)
-    def get(self):
+            print(serializer.errors)
+            return Response("Invalid Credentials ", status.HTTP_401_UNAUTHORIZED)
+    def get(self,request):
         model = Users.objects.all()
-        serializer = RegisterSerializer(model, many=True)
-        return Response({"message": "Success", "responsePayload": serializer.data})
+        # serializer = RegisterSerializer(model, many=True)
+        for user in model:
+            response={
+            "user_id":user.user_id,
+            "username":user.username,
+            "phonenumber":user.phonenumber,
+            "is_admin":user.is_admin,
+            "is_staff":user.is_staff
+            }
+            return Response(response,status=status.HTTP_200_OK)
+        return Response({"message": "Not Found", "responsePayload": serializer.data})
 
 
 
@@ -75,6 +86,7 @@ class Login(APIView):
             response = {"message":"An Error ocurred", "token": token}
             print("Response to API ",response)
             return Response(response, status=status.HTTP_401_UNAUTHORIZED)
+    
 
 
 class Order(APIView):
