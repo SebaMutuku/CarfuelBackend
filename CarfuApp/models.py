@@ -252,6 +252,8 @@ class Roles(models.Model):
     class Meta:
         managed = False
         db_table = 'roles'
+    def __str__(self):
+        return self.rolename
 
 
 class Users(models.Model):
