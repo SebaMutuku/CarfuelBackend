@@ -45,8 +45,8 @@ class Register(views.APIView):
 			return Response("Invalid Credentials ", status.HTTP_401_UNAUTHORIZED)
 	
 	def get(self, request):
-		user = Users.objects.all().defer("password", "token")
-		serializer = RegisterSerializer(model, many=True)
+		users =Users.objects.all().defer("password", "token")
+		serializer =RegisterSerializer(user,many=True)
 		if serializer.is_valid(raise_exception=True):
 			response = {"message": "Success", "responsePayload": serializer.data}
 			return Response(response,status=status.HTTP_200_OK)
