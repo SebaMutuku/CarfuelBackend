@@ -46,7 +46,7 @@ class Register(views.APIView):
     def get(self,request):
         model = Users.objects.all()
         # serializer = RegisterSerializer(model, many=True)
-        if user is not None:
+        if model is not None:
             for user in model:
                 response={
                 "user_id":user.user_id,
