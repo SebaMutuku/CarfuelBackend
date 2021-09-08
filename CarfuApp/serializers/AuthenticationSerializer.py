@@ -97,6 +97,13 @@ class RegisterSerializer(serializers.ModelSerializer, PageNumberPagination):
 				                  'user_id': user.user_id,
 				                  'roleid': role.rolename}
 				return entityResponse
+		
+		def get_user(self):
+			users = Users.objects.all().defer("password", "token")
+			if user is not None:
+				return user
+			else:
+				return None
 
 
 class DecodeToken:

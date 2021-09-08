@@ -45,25 +45,14 @@ class Register(views.APIView):
 			return Response("Invalid Credentials ", status.HTTP_401_UNAUTHORIZED)
 	
 	def get(self, request):
-		user = Users.objects.all()
-		# serializer = RegisterSerializer(model, many=True)
-		if user is not None:
-			response = {
-					"user_id": user.user_id,
-					"username": user.username,
-					"phonenumber": user.phonenumber,
-					"is_admin": user.is_admin,
-					"is_staff": user.is_agent,
-					"created_on": user.created_on,
-					"last_login": user.last_login,
-					"RoleName": user.roleid.rolename,
-					"Is_Active": user.is_active
-			}
-			response_payload = {"ResponsePayload": response}
-			return Response(response_payload, status=status.HTTP_200_OK)
+		user = Users.objects.all().defer("password", "token")
+		serializer = RegisterSerializer(model, many=True)
+		if serializer.is_valid(raise_exception=True):
+			response = {"message": "Success", "responsePayload": serializer.data}
+			return Response(response,status=status.HTTP_200_OK)
 		else:
-			response = {"ResponsePayload": None, "message": "Data not found"}
-			return Response(response, status=status.HTTP_200_OK)
+			response={"message":"No Data found","responsePayload":None}
+			return Response(response,status=status.HTTP_404_NOT_FOUND)
 
 
 class Login(APIView):
