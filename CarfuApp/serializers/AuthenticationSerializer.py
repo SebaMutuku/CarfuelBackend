@@ -11,8 +11,6 @@ from CarfuelBackEnd import settings
 from datetime import datetime, timedelta
 import jwt
 from rest_framework.response import Response
-import dotenv as env
-import os
 
 
 class LoginSerializer(serializers.ModelSerializer):
