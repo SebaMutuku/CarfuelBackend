@@ -62,6 +62,13 @@ class RegisterSerializer(serializers.ModelSerializer, PageNumberPagination):
 		fields = (
 			'user_id',
 			'username',
+			'phonenumber',
+			'created_on',
+			'last_login',
+			'is_admin',
+			'is_active',
+			'roleid',
+			'is_agent'
 		)
 	
 	def addUser(self, data):
@@ -99,8 +106,15 @@ class RegisterSerializer(serializers.ModelSerializer, PageNumberPagination):
 				return entityResponse
 		
 		def get_user(self):
-			users = Users.objects.values_list("user_id", "username", "phonenumber", "created_on", "last_login",
-			                                  "is_admin", "is_active","roleid","is_agent")
+			users = Users.objects.values_list("user_id",
+			                                  "username",
+			                                  "phonenumber",
+			                                  "created_on",
+			                                  "last_login",
+			                                  "is_admin",
+			                                  "is_active",
+			                                  "roleid",
+			                                  "is_agent")
 			if user is not None:
 				return user
 			else:
