@@ -46,16 +46,20 @@ class Register(views.APIView):
     def get(self,request):
         model = Users.objects.all()
         # serializer = RegisterSerializer(model, many=True)
-        for user in model:
-            response={
-            "user_id":user.user_id,
-            "username":user.username,
-            "phonenumber":user.phonenumber,
-            "is_admin":user.is_admin,
-            "is_staff":user.is_staff
-            }
-            return Response(response,status=status.HTTP_200_OK)
-        return Response({"message": "Not Found", "responsePayload": serializer.data})
+        if user is not None:
+            for user in model:
+                response={
+                "user_id":user.user_id,
+                "username":user.username,
+                "phonenumber":user.phonenumber,
+                "is_admin":user.is_admin,
+                "is_staff":user.is_agent
+                }
+                return Response(response,status=status.HTTP_200_OK)
+        else:
+            response = {"message": "Data not found"}
+            return Response(response, status=status.HTTP_200_OK)
+            
 
 
 
