@@ -99,7 +99,8 @@ class RegisterSerializer(serializers.ModelSerializer, PageNumberPagination):
 				return entityResponse
 		
 		def get_user(self):
-			users = Users.objects.all().defer("password", "token")
+			users = Users.objects.values_list("user_id", "username", "phonenumber", "created_on", "last_login",
+			                                  "is_admin", "is_active","roleid","is_agent")
 			if user is not None:
 				return user
 			else:
