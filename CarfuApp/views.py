@@ -45,11 +45,10 @@ class Register(views.APIView):
 			return Response("Invalid Credentials ", status.HTTP_401_UNAUTHORIZED)
 	
 	def get(self, request):
-		model = Users.objects.all()
+		user = Users.objects.all()
 		# serializer = RegisterSerializer(model, many=True)
-		if model is not None:
-			for user in model:
-				response = {
+		if user is not None:
+			response = {
 					"user_id": user.user_id,
 					"username": user.username,
 					"phonenumber": user.phonenumber,
@@ -59,9 +58,9 @@ class Register(views.APIView):
 					"last_login": user.last_login,
 					"RoleName": user.roleid.rolename,
 					"Is_Active": user.is_active
-				}
-				response_payload = {"ResponsePayload": response}
-				return Response(response_payload, status=status.HTTP_200_OK)
+			}
+			response_payload = {"ResponsePayload": response}
+			return Response(response_payload, status=status.HTTP_200_OK)
 		else:
 			response = {"ResponsePayload": None, "message": "Data not found"}
 			return Response(response, status=status.HTTP_200_OK)
