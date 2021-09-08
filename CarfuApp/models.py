@@ -267,7 +267,7 @@ class Users(models.Model):
     is_active = models.BooleanField(default=True, null=False)
     token = models.CharField(max_length=255, blank=True, null=True)
     roleid = models.OneToOneField(Roles, models.DO_NOTHING, db_column='roleid', blank=True, null=True)
-    is_agent = models.BooleanField(blank=True, null=True)
+    is_agent = models.BooleanField(default=False, null=True)
 
     class Meta:
         managed = False
