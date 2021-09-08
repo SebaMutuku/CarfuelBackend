@@ -62,13 +62,6 @@ class RegisterSerializer(serializers.ModelSerializer, PageNumberPagination):
 		fields = (
 			'user_id',
 			'username',
-			'phonenumber',
-			'created_on',
-			'last_login',
-			'is_admin',
-			'is_active',
-			'roleid',
-			'is_agent'
 		)
 	
 	def addUser(self, data):
@@ -104,21 +97,29 @@ class RegisterSerializer(serializers.ModelSerializer, PageNumberPagination):
 				                  'user_id': user.user_id,
 				                  'roleid': role.rolename}
 				return entityResponse
-		
-		def get_user(self):
-			users = Users.objects.values_list("user_id",
-			                                  "username",
-			                                  "phonenumber",
-			                                  "created_on",
-			                                  "last_login",
-			                                  "is_admin",
-			                                  "is_active",
-			                                  "roleid",
-			                                  "is_agent")
-			if user is not None:
-				return user
-			else:
-				return None
+
+
+class ReadUsers(serializers.ModelSerializer):
+	class Meta:
+		model = Users
+		fields = (
+			'user_id',
+			'username',
+			'phonenumber',
+			'created_on',
+			'last_login',
+			'is_admin',
+			'is_active',
+			'roleid',
+			'is_agent'
+		)
+	
+	def get_user(self):
+		users = Users.objects.all().defer("password", "token")
+		if user is not None:
+			return user
+		else:
+			return None
 
 
 class DecodeToken:

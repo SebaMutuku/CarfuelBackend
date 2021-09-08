@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 
 from CarfuelBackEnd import settings
 from . import models
-from CarfuApp.serializers.AuthenticationSerializer import RegisterSerializer, DecodeToken, LoginSerializer
+from CarfuApp.serializers.AuthenticationSerializer import RegisterSerializer, DecodeToken, LoginSerializer,ReadUsers
 from CarfuApp.serializers.OrderSerializer import OrderSerializer
 from .models import Orders
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -46,7 +46,7 @@ class Register(views.APIView):
 	
 	def get(self, request):
 		user =Users.objects.all().defer("password", "token")
-		serializer =RegisterSerializer(user,many=True)
+		serializer =ReadUsers(user,many=True)
 		response = {"message": "Success", "responsePayload": serializer.data}
 		return Response(response,status=status.HTTP_200_OK)
 
