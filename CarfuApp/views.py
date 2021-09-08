@@ -60,10 +60,11 @@ class Register(views.APIView):
 					"RoleName": user.roleid,
 					"Is_Active": user.is_active
 				}
-				return Response({"ResponsePayload": response}, status=status.HTTP_200_OK)
+				response_payload = {"ResponsePayload": response}
+				return Response(response_payload, status=status.HTTP_200_OK)
 		else:
-			response = {"message": "Data not found"}
-			return Response({"ResponsePayload": response}, status=status.HTTP_200_OK)
+			response = {"ResponsePayload": None, "message": "Data not found"}
+			return Response(response, status=status.HTTP_200_OK)
 
 
 class Login(APIView):
