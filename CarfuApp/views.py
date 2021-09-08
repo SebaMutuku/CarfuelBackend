@@ -47,12 +47,8 @@ class Register(views.APIView):
 	def get(self, request):
 		user =Users.objects.all().defer("password", "token")
 		serializer =RegisterSerializer(user,many=True)
-		if serializer.is_valid(raise_exception=True):
-			response = {"message": "Success", "responsePayload": serializer.data}
-			return Response(response,status=status.HTTP_200_OK)
-		else:
-			response={"message":"No Data found","responsePayload":None}
-			return Response(response,status=status.HTTP_404_NOT_FOUND)
+		response = {"message": "Success", "responsePayload": serializer.data}
+		return Response(response,status=status.HTTP_200_OK)
 
 
 class Login(APIView):
