@@ -57,7 +57,7 @@ class Register(views.APIView):
 					"is_staff": user.is_agent,
 					"created_on": user.created_on,
 					"last_login": user.last_login,
-					"RoleName": user.roleid,
+					"RoleName": user.roleid.rolename,
 					"Is_Active": user.is_active
 				}
 				response_payload = {"ResponsePayload": response}
