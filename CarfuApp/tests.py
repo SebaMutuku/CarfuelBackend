@@ -27,6 +27,7 @@ class ApiTest(APITestCase):
 	def test_get_users(self):
 		users=Users.objects.all()
 		response=self.client.get(self.url)
+		print(response)
 		if response.status_code==200:
 			self.assertEqual(users,response.data)
 		else:
