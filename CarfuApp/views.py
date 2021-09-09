@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 from rest_framework import status, views
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
@@ -11,7 +12,7 @@ from rest_framework.views import APIView
 
 from CarfuelBackEnd import settings
 from . import models
-from CarfuApp.serializers.AuthenticationSerializer import RegisterSerializer, DecodeToken, LoginSerializer,ReadUsers
+from CarfuApp.serializers.AuthenticationSerializer import RegisterSerializer, DecodeToken, LoginSerializer, ReadUsers
 from CarfuApp.serializers.OrderSerializer import OrderSerializer
 from .models import Orders
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -45,38 +46,24 @@ class Register(views.APIView):
 			return Response("Invalid Credentials ", status.HTTP_401_UNAUTHORIZED)
 	
 	def get(self, request):
-		user =Users.objects.all().defer("password", "token")
-		serializer =ReadUsers(user,many=True)
+		user = Users.objects.all().defer("password", "token")
+		serializer = ReadUsers(user, many=True)
 		response = {"message": "Success", "responsePayload": serializer.data}
-		return Response(response,status=status.HTTP_200_OK)
+		return Response(response, status=status.HTTP_200_OK)
 
 
 class Login(APIView):
-	querySet = models.Roles.objects.all()
-	renderer_classes = (JSONRenderer,)
 	serializer_class = LoginSerializer
-	permission_classes = (AllowAny,)
-	authentication_classes = (SessionAuthentication, BasicAuthentication)
-	parser_classes(JSONParser, )
 	
 	def post(self, request):
-		print("Received Request  ", request)
+		print(f"Request {request.data}")
 		serializer = self.serializer_class(data=request.data)
-		serializer.is_valid(raise_exception=True)
-		if serializer.is_valid():
-			token = serializer.authenticateUser(request.data)
-			if token:
-				response = {"message": "Successfully Logged In ", "token": token}
-				print("Response to API ", response)
-				return Response(response, status=status.HTTP_200_OK)
-			else:
-				response = {"message": "invalid Login Credentials", "token": token}
-				print("Response to API ", response)
-				return Response(response, status=status.HTTP_401_UNAUTHORIZED)
-		else:
-			response = {"message": "An Error ocurred", "token": token}
-			print("Response to API ", response)
-			return Response(response, status=status.HTTP_401_UNAUTHORIZED)
+		serializer.is_valid()
+		token = serializer.authenticateUser(request.data)
+		print(f"token {token}")
+		if token is not None:
+			return Response(token, status=status.HTTP_200_OK)
+		return Response({"Message ": "Invalid Credentials ", "token": None}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class Order(APIView):
@@ -95,9 +82,8 @@ class Order(APIView):
 			if order:
 				response = {"message": "Order Successful", "OrderDetails": serializer.data}
 				return Response(response, status=status.HTTP_200_OK)
-			else:
-				response = {"message": "Order Failed", "OrderDetails": None}
-				return Response(response, status=status.HTTP_417_EXPECTATION_FAILED)
+			response = {"message": "Order Failed", "OrderDetails": None}
+			return Response(response, status=status.HTTP_417_EXPECTATION_FAILED)
 		
 		else:
 			response = {"message": "Failed", "OrderDetails": None}
