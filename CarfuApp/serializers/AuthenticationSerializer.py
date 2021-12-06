@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+import datetime
+from datetime import timedelta
 
 import jwt
 from django.http import HttpResponse
@@ -13,6 +14,8 @@ from CarfuelBackEnd import settings
 
 
 class LoginSerializer(serializers.Serializer, PageNumberPagination):
+    page_size = 30
+
     class Meta:
         fields = (
             'username',
@@ -29,12 +32,13 @@ class LoginSerializer(serializers.Serializer, PageNumberPagination):
             user = Users.objects.get(username=uname, password=AESEncryption().encrypt_value(pword))
             if user.username and user.password:
                 secret_key = settings.SECRET_KEY
-                expiry_date = datetime.now() + timedelta(days=1)
+                expiry_date = datetime.datetime.now() + timedelta(days=1)
                 token_claims = {"id": user.user_id,
                                 "subject": user.username,
                                 "role_id": user.roleid.roleid}
                 token = jwt.encode(token_claims, secret_key, 'HS256')
                 user.token = token
+                user.last_login = datetime.datetime.now(tz=datetime.timezone.utc)
                 user.save()
                 user_response['token'] = token
                 user_response['username'] = user.username
