@@ -58,7 +58,7 @@ class Login(views.APIView):
             if user:
                 return Response({"User": user, "message": "Successfully logged in"},
                                 status=status.HTTP_200_OK)
-        return Response({"User": user, "message": "Invalid Credentials"}, status.HTTP_401_UNAUTHORIZED)
+        return Response({"User": [], "message": "Invalid Credentials"}, status.HTTP_401_UNAUTHORIZED)
 
     def get(self, request):
         return Response({"User": [], "message": "Method not Allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
