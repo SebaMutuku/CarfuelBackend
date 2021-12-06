@@ -8,24 +8,22 @@ CREATE TABLE Roles(
 #============Users==============
 CREATE TABLE public.users
 (
-    user_id serial PRIMARY KEY ,
-    username  VARCHAR ( 50 ) NOT NULL,
-    password  VARCHAR ( 50 ) NOT NULL,
-    email  VARCHAR ( 255 )  NULL,
-    created_on  TIMESTAMP  NOT NULL,
-    last_login  TIMESTAMP  NULL,
-    is_admin boolean NOT NULL DEFAULT false,
-    is_active boolean NOT NULL DEFAULT false,
-    token VARCHAR ( 255 )  NULL,
-    roleid int,
-    is_agent boolean DEFAULT false,
+    user_id    serial PRIMARY KEY,
+    username   VARCHAR(50)  NOT NULL,
+    password   VARCHAR(50)  NOT NULL,
+    email      VARCHAR(255) NULL,
+    phonenumber varchar(14) NULL ,
+    created_on TIMESTAMP    NOT NULL,
+    last_login TIMESTAMP    NULL,
+    is_admin   boolean      NULL DEFAULT false,
+    is_active  boolean      NULL DEFAULT false,
+    token      VARCHAR(255) NULL,
+    roleid     int,
+    is_agent   boolean               DEFAULT false,
     CONSTRAINT users_email_key UNIQUE (email),
     CONSTRAINT users_username_key UNIQUE (username),
-    CONSTRAINT roleid FOREIGN KEY (roleid)
-        REFERENCES public.roles (roleid) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-)
+    CONSTRAINT roleid FOREIGN KEY (roleid) REFERENCES public.roles (roleid) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION
+);
 #==============Orders=============
 CREATE TABLE Orders (
 	orderId serial PRIMARY KEY,
