@@ -14,6 +14,8 @@ import os
 import dj_database_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from django.core.checks import templates
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
@@ -33,7 +35,6 @@ DEBUG = True
 
 # ALLOWED_HOSTS = ['carfueldjango.herokuapp.com', 'localhost:3000', ]
 #Encryption
-ALLOWED_HOSTS=['*']
 ENCRYPTION_BLOCK_SIZE =32
 PADDING = '{'
 USER_PASS_KEY = 'pEp96PsFTvfNGUNttFWqObLgKeqb9j9+sIBo/B98kZA='
@@ -134,7 +135,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'CarfuelDB',
-        'USER': 'postgres',
+        'USER': 'carfueluser',
         'PASSWORD': 'djangoangular',
         'HOST': 'localhost',
         'PORT': 5432,
@@ -174,8 +175,6 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
-
-STATIC_URL = '/static/'
 
 PROJECT_ROOT = os.path.join(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
