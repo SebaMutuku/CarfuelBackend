@@ -1,8 +1,7 @@
-from xmlrpc.client import DateTime
+import datetime
 
 from django.contrib.auth.base_user import BaseUserManager
 from django.db import models
-import datetime
 from django.utils import timezone
 
 
@@ -135,8 +134,9 @@ class Oauth2ProviderAccesstoken(models.Model):
     user = models.OneToOneField(AuthUser, models.DO_NOTHING, blank=True, null=True)
     created = models.DateTimeField()
     updated = models.DateTimeField()
-    source_refresh_token = models.OneToOneField('Oauth2ProviderRefreshtoken', models.DO_NOTHING, unique=True, blank=True,
-                                             null=True)
+    source_refresh_token = models.OneToOneField('Oauth2ProviderRefreshtoken', models.DO_NOTHING, unique=True,
+                                                blank=True,
+                                                null=True)
     id_token = models.OneToOneField('Oauth2ProviderIdtoken', models.DO_NOTHING, unique=True, blank=True, null=True)
 
     class Meta:
@@ -201,7 +201,8 @@ class Oauth2ProviderIdtoken(models.Model):
 class Oauth2ProviderRefreshtoken(models.Model):
     id = models.BigAutoField(primary_key=True)
     token = models.CharField(max_length=255)
-    access_token = models.OneToOneField(Oauth2ProviderAccesstoken, models.DO_NOTHING, unique=True, blank=True, null=True)
+    access_token = models.OneToOneField(Oauth2ProviderAccesstoken, models.DO_NOTHING, unique=True, blank=True,
+                                        null=True)
     application = models.OneToOneField(Oauth2ProviderApplication, models.DO_NOTHING)
     user = models.OneToOneField(AuthUser, models.DO_NOTHING)
     created = models.DateTimeField()
@@ -252,6 +253,7 @@ class Roles(models.Model):
     class Meta:
         managed = False
         db_table = 'roles'
+
     def __str__(self):
         return self.rolename
 
@@ -272,6 +274,7 @@ class Users(models.Model):
     class Meta:
         managed = False
         db_table = 'users'
+
     def __str__(self):
         return self.username
 

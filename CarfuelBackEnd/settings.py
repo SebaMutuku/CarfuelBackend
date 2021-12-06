@@ -136,7 +136,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'CarfuelDB',
         'USER': 'carfueluser',
-        'PASSWORD': 'djangoangular',
+        'PASSWORD': 'carfueluser',
         'HOST': 'localhost',
         'PORT': 5432,
     }

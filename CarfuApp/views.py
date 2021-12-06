@@ -46,18 +46,22 @@ class Register(views.APIView):
         return Response(response, status=status.HTTP_200_OK)
 
 
-class Login(APIView):
+class Login(views.APIView):
+    permission_classes = (AllowAny,)
     serializer_class = LoginSerializer
+    parser_classes(JSONParser, )
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid(raise_exception=True):
             user = serializer.authenticateuser(request.data)
-            if user is not None:
-                return Response({"User": user, "message": "Successfully logged in"}, status=status.HTTP_200_OK)
-            return Response({"User": user, "message ": "Invalid Credentials "}, status=status.HTTP_401_UNAUTHORIZED)
-        print(serializer.errors)
-        return Response({"User": [], "message ": "Invalid Credentials "}, status=status.HTTP_401_UNAUTHORIZED)
+            if user:
+                return Response({"User": user, "message": "Successfully logged in"},
+                                status=status.HTTP_200_OK)
+        return Response({"User": user, "message": "Invalid Credentials"}, status.HTTP_401_UNAUTHORIZED)
+
+    def get(self, request):
+        return Response({"User": [], "message": "Method not Allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 class Order(APIView):

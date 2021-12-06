@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 
 import jwt
-from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from rest_framework import authentication, exceptions
 from rest_framework import serializers
@@ -13,7 +12,7 @@ from CarfuApp.utils.Security import AESEncryption
 from CarfuelBackEnd import settings
 
 
-class LoginSerializer(serializers.ModelSerializer):
+class LoginSerializer(serializers.Serializer, PageNumberPagination):
     class Meta:
         fields = (
             'username',
@@ -23,70 +22,36 @@ class LoginSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def authenticateuser(data):
-        username = data['username']
-        password = data['password']
+        uname = data['username']
+        pword = data['password']
         user_response = dict()
         try:
-            user = Users.objects.get(username=username, password=AESEncryption().encrypt_value(password))
-            print(f"Users {user} username {user.username} password {user.password}")
-            if user.username is not None and user.password is not None:
+            user = Users.objects.get(username=uname, password=AESEncryption().encrypt_value(pword))
+            if user.username and user.password:
                 secret_key = settings.SECRET_KEY
                 expiry_date = datetime.now() + timedelta(days=1)
-                token_claims = {"id": user.user_id, "subject": user.username,
+                token_claims = {"id": user.user_id,
+                                "subject": user.username,
                                 "role_id": user.roleid.roleid}
-                token = jwt.encode(token_claims, secret_key, 'HS256').decode("ascii")
+                token = jwt.encode(token_claims, secret_key, 'HS256')
                 user.token = token
-                # user.last_login= timezone.now()
-                if user.save():
-                    user_response['token'] = token
-                    user_response['username'] = user.username
-                    user_response['role'] = user.roleid.roleid
-                    return user_response
+                user.save()
+                user_response['token'] = token
+                user_response['username'] = user.username
+                user_response['role'] = user.roleid.roleid
                 return user_response
             return user_response
-        except ObjectDoesNotExist:
+        except Users.DoesNotExist or Exception as e:
+            print("Exception is ", e)
             return None
-
-
-# try:
-# 	user = Users.objects.get(username=username)
-# 	print("Password",user.password)
-# 	if user is not None:
-# 		if user.is_active:
-# 			# if not user.logged_in != False:
-# 			if password == user.password:
-# 				secret_key = settings.SECRET_KEY
-# 				expirydate = datetime.now() + timedelta(days=1)
-# 				claims = {
-# 					"id": user.user_id,
-# 					"subject": user.username,
-# 					"exp": expirydate,
-# 					"roleId": user.roleid.roleid
-# 				}
-# 				# token = jwt.encode(claims, secret_key, algorithm='HS256')
-# 				token=Token.objects.get_or_create(user=user)
-# 				print("Token",token)
-# 				user.last_login = datetime.today().strftime("%Y-%m-%d %H:%M")
-# 				user.token = token
-# 				if (user.save()):
-# 					return token
-# 				return token
-# 			else:
-# 				raise serializers.ValidationError({"message": "Invalid Credentials", "token": ""})
-# 		else:
-# 			raise serializers.ValidationError({"message": "Inactive User", "token": ""})
-#
-# 	else:
-# 		raise serializers.ValidationError({"message": "Invalid username", "token": ""})
-# t ObjectDoesNotExist:
-# 	return None
 
 
 class RegisterSerializer(serializers.ModelSerializer, PageNumberPagination):
     class Meta:
         model = Users
         fields = (
-            'user_id',
+            'phonenumber',
+            'password',
             'username',
         )
 
