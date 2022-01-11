@@ -1,6 +1,6 @@
 
 ##This a DjangoProjectDEployed on Heroku
-#===========Role==========
+>#===========Role==========
 CREATE TABLE Roles(
    roleId serial PRIMARY KEY,
    roleName VARCHAR (255) UNIQUE NOT NULL
@@ -24,7 +24,7 @@ CREATE TABLE public.users
     CONSTRAINT users_username_key UNIQUE (username),
     CONSTRAINT roleid FOREIGN KEY (roleid) REFERENCES public.roles (roleid) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION
 );
-> #==============Orders=============
+>#==============Orders=============
 CREATE TABLE Orders (
 	orderId serial PRIMARY KEY,
 	orderNumber VARCHAR ( 50 ) NOT NULL,
