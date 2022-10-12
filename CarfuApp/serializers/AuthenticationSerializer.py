@@ -61,36 +61,33 @@ class RegisterSerializer(serializers.ModelSerializer, PageNumberPagination):
 
     @staticmethod
     def adduser(data):
-        if data['password'] is None:
-            raise serializers.ValidationError({"Message": "Passwords do not match"})
+        username_exists = Users.objects.filter(username=data['username']).exists()
+        if username_exists:
+            raise serializers.ValidationError(
+                {"Message": "User with username " + "[" + str(data['username']) + "]" + " already exists "})
         else:
-            username_exists = Users.objects.filter(username=data['username'])
-            if username_exists:
-                raise serializers.ValidationError(
-                    {"Message": "User with username " + "[" + str(data['username']) + "]" + " already exists "})
+            success = SMS.SendSMS.sendMessageBirdSMS(data=data)
+            print("SMS response", success)
+            password = AESEncryption().encrypt(data['password'])
+            print("Encrypted password", password)
+            phonenumber = data.get('phonenumber')
+            username = data['username']
+            role = Roles.objects.get(roleid=3)
+            if role.rolename == "Admin":
+                user = AddUsersIntoDb().create_superuser(password=password, roleId=role,
+                                                         username=username, phonenumber=phonenumber)
+            elif role.rolename == "Agent":
+                user = AddUsersIntoDb().create_staffuser(
+                    password=password,
+                    username=username, roleId=role, phonenumber=phonenumber)
             else:
-                success = SMS.SendSMS.sendMessageBirdSMS(data=data)
-                print("SMS response", success)
-                password = AESEncryption().encrypt(data['password'])
-                print("Encrypted password", password)
-                phonenumber = data.get('phonenumber')
-                username = data['username']
-                role = Roles.objects.get(roleid=3)
-                if role.rolename == "Admin":
-                    user = AddUsersIntoDb().create_superuser(password=password, roleId=role,
-                                                             username=username, phonenumber=phonenumber)
-                elif role.rolename == "Agent":
-                    user = AddUsersIntoDb().create_staffuser(
-                        password=password,
-                        username=username, roleId=role, phonenumber=phonenumber)
-                else:
-                    user = AddUsersIntoDb().create_normal_user(
-                        password=password,
-                        username=username, roleId=role, phonenumber=phonenumber)
-                entityResponse = {'username': user.username,
-                                  'user_id': user.user_id,
-                                  'roleid': role.rolename}
-                return entityResponse
+                user = AddUsersIntoDb().create_normal_user(
+                    password=password,
+                    username=username, roleId=role, phonenumber=phonenumber)
+            entityResponse = {'username': user.username,
+                              'user_id': user.user_id,
+                              'roleid': role.rolename}
+            return entityResponse
 
 
 class ReadUsers(serializers.ModelSerializer):
