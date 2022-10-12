@@ -23,16 +23,15 @@ class Register(views.APIView):
     pagination_class = PageNumberPagination
 
     def post(self, request):
-        print("Received Request  ", request)
         serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid(raise_exception=True):
+        if serializer.is_valid(raise_exception=False):
             user = serializer.adduser(request.data)
             if user:
-                return Response({"User": user, "Message": "Successfully created user ['{}']".format(
+                return Response({"user": user, "message": "Successfully created user ['{}']".format(
                     request.data.get('username'))},
                                 status=status.HTTP_200_OK)
             else:
-                return Response({serializer.error},
+                return Response({"message": serializer.error_messages},
                                 status=status.HTTP_401_UNAUTHORIZED)
 
         else:
@@ -42,7 +41,7 @@ class Register(views.APIView):
     def get(self, request):
         user = Users.objects.all().defer("password", "token")
         serializer = ReadUsers(user, many=True)
-        response = {"message": "Success", "responsePayload": serializer.data}
+        response = {"message": "success", "responsePayload": serializer.data}
         return Response(response, status=status.HTTP_200_OK)
 
 
@@ -56,12 +55,12 @@ class Login(views.APIView):
         if serializer.is_valid(raise_exception=True):
             user = serializer.authenticateuser(request.data)
             if user:
-                return Response({"User": user, "message": "Successfully logged in"},
+                return Response({"user": user, "message": "Successfully logged in"},
                                 status=status.HTTP_200_OK)
-        return Response({"User": [], "message": "Invalid Credentials"}, status.HTTP_401_UNAUTHORIZED)
+        return Response({"user": [], "message": "Invalid Credentials"}, status.HTTP_401_UNAUTHORIZED)
 
     def get(self, request):
-        return Response({"User": [], "message": "Method not Allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        return Response({"user": [], "message": "Method not Allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 class Order(APIView):
@@ -90,7 +89,7 @@ class Order(APIView):
     def get(self, request):
         model = Orders.objects.all()
         serializer = OrderSerializer(model, many=True)
-        return Response({"message": "Success", "responsePayload": serializer.data})
+        return Response({"message": "success", "responsePayload": serializer.data})
 
     def update(self):
         pass
