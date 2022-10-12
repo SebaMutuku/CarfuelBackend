@@ -29,7 +29,7 @@ class LoginSerializer(serializers.Serializer, PageNumberPagination):
         pword = data['password']
         user_response = dict()
         try:
-            user = Users.objects.get(username=uname, password=AESEncryption().encrypt_value(pword))
+            user = Users.objects.get(username=uname, password=AESEncryption().encrypt(pword))
             if user.username and user.password:
                 secret_key = settings.SECRET_KEY
                 expiry_date = datetime.datetime.now() + timedelta(days=1)
@@ -71,7 +71,7 @@ class RegisterSerializer(serializers.ModelSerializer, PageNumberPagination):
             else:
                 success = SMS.SendSMS.sendMessageBirdSMS(data=data)
                 print("SMS response", success)
-                password = AESEncryption().encrypt_value(data['password'])
+                password = AESEncryption().encrypt(data['password'])
                 print("Encrypted password", password)
                 phonenumber = data.get('phonenumber')
                 username = data['username']

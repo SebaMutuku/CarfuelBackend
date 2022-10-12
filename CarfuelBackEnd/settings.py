@@ -11,8 +11,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
-import dj_database_url
 
+import dj_database_url
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 from django.core.checks import templates
 
@@ -34,10 +34,10 @@ MESSAGE_BIRD_URL = 'https://rest.messagebird.com/messages'
 DEBUG = True
 
 # ALLOWED_HOSTS = ['carfueldjango.herokuapp.com', 'localhost:3000', ]
-#Encryption
-ENCRYPTION_BLOCK_SIZE =32
-PADDING = '{'
-USER_PASS_KEY = 'pEp96PsFTvfNGUNttFWqObLgKeqb9j9+sIBo/B98kZA='
+# Encryption
+ENCRYPTION_BLOCK_SIZE = 32
+ENC_SECRET_KEY = 'dEghUzFzTXlUM3NUUEBTc1cwckQ='
+ENC_SALT = '4420d1918bbcf7686defdf9560bb5087d20076de5f77b7cb4c3b40bf46ec428b'
 
 # Application definition
 REST_FRAMEWORK = {

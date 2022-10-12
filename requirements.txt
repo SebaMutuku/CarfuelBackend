@@ -1,4 +1,4 @@
-asgiref==3.3.4
+asgiref==3.5.2
 certifi==2020.12.5
 cffi==1.14.5
 chardet==4.0.0
@@ -28,7 +28,6 @@ oauth2-provider==0.0
 oauthlib==3.1.0
 psycopg2-binary==2.8.6
 pycparser==2.20
-pycrypto==2.6.1
 pycryptodome==3.10.1
 PyJWT>=2.0.0
 pymongo==3.11.3
