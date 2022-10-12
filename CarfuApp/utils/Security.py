@@ -26,7 +26,7 @@ class AESEncryption:
         return hashlib.pbkdf2_hmac(HASH_NAME, password.encode(), salt.encode(), ITERATION_COUNT, KEY_LENGTH)
 
     def encrypt(self, plain_string):
-        secret = base64.b64decode(settings.ENC_KEY)
+        secret = self.get_secret_key(settings.ENC_SECRET_KEY, settings.ENC_SALT)
         message = self.pad(plain_string)
         iv = get_random_bytes(IV_LENGTH)
         cipher = AES.new(secret, AES.MODE_CBC, iv)
@@ -34,7 +34,7 @@ class AESEncryption:
         return bytes.decode(cipher_bytes)
 
     def decrypt(self, encrypted_string):
-        secret = base64.b64decode(settings.ENC_KEY)
+        secret = self.get_secret_key(settings.ENC_SECRET_KEY, settings.ENC_SALT)
         decoded = base64.b64decode(encrypted_string)
         iv = decoded[:AES.block_size]
         cipher = AES.new(secret, AES.MODE_CBC, iv)

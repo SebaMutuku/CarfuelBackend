@@ -29,8 +29,9 @@ class LoginSerializer(serializers.Serializer, PageNumberPagination):
         pword = data['password']
         user_response = dict()
         try:
-            user = Users.objects.get(username=uname, password=AESEncryption().encrypt(pword))
-            if user.username and user.password:
+            user = Users.objects.get(username=uname)
+            raw_password = AESEncryption().decrypt(user.password)
+            if user.username and pword == raw_password:
                 secret_key = settings.SECRET_KEY
                 expiry_date = datetime.datetime.now() + timedelta(days=1)
                 token_claims = {"id": user.user_id,
