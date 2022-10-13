@@ -27,16 +27,18 @@ class Register(views.APIView):
         if serializer.is_valid(raise_exception=False):
             user = serializer.adduser(request.data)
             if user:
-                return Response({"user": user, "message": "Successfully created user ['{}']".format(
-                    request.data.get('username'))},
-                                status=status.HTTP_202_ACCEPTED)
+                return Response(
+                    {"user": user, "message": "Successfully created user", "responseCode": status.HTTP_202_ACCEPTED},
+                    status=status.HTTP_202_ACCEPTED)
             else:
-                return Response({"message": serializer.error_messages},
-                                status=status.HTTP_208_ALREADY_REPORTED)
+                return Response(
+                    {"message": serializer.error_messages, "responseCode": status.HTTP_208_ALREADY_REPORTED},
+                    status=status.HTTP_208_ALREADY_REPORTED)
 
         else:
             print(serializer.errors)
-            return Response({"message": "username already exists"}, status.HTTP_208_ALREADY_REPORTED)
+            return Response({"message": "username already exists", "responseCode": status.HTTP_208_ALREADY_REPORTED},
+                            status.HTTP_208_ALREADY_REPORTED)
 
     def get(self, request):
         user = Users.objects.all().defer("password", "token")
