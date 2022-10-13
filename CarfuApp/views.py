@@ -29,14 +29,14 @@ class Register(views.APIView):
             if user:
                 return Response({"user": user, "message": "Successfully created user ['{}']".format(
                     request.data.get('username'))},
-                                status=status.HTTP_200_OK)
+                                status=status.HTTP_202_ACCEPTED)
             else:
                 return Response({"message": serializer.error_messages},
-                                status=status.HTTP_401_UNAUTHORIZED)
+                                status=status.HTTP_208_ALREADY_REPORTED)
 
         else:
             print(serializer.errors)
-            return Response({"message": "username already exists"}, status.HTTP_401_UNAUTHORIZED)
+            return Response({"message": "username already exists"}, status.HTTP_208_ALREADY_REPORTED)
 
     def get(self, request):
         user = Users.objects.all().defer("password", "token")
