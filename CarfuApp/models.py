@@ -279,6 +279,28 @@ class Users(models.Model):
         return self.username
 
 
+class Cars(models.Model):
+    car_id = models.AutoField(primary_key=True)
+    make = models.CharField(blank=False, max_length=1000)
+    model = models.CharField(max_length=1000)
+    color = models.CharField(max_length=20)
+    yom = models.CharField(max_length=4)
+    mileage = models.CharField(blank=True, max_length=1000)
+    sell_status = models.BooleanField(default=False, null=False)
+    price = models.CharField(blank=False, max_length=1000)
+    imageUrl = models.ImageField(upload_to="car_images/", blank=True)
+    image_data = models.BinaryField(blank=True)
+    car_description = models.CharField(blank=True, max_length=1000)
+    saved_on = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'cars'
+
+    def __str__(self):
+        return self.make + self.model
+
+
 class AddUsersIntoDb(BaseUserManager):
     def create_user(self, password, **extra_fields):
         user = Users.objects.create(username=extra_fields.get('username'),

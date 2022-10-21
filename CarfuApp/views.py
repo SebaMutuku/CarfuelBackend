@@ -95,3 +95,30 @@ class Order(APIView):
 
     def update(self):
         pass
+
+
+class Car(views.APIView):
+    querySet = models.Cars.objects.all()
+    renderer_classes = (JSONRenderer,)
+    serializer_class = OrderSerializer
+    permission_classes = (AllowAny,)
+    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    parser_classes(JSONParser, )
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        if serializer.is_valid():
+            created = serializer.createOrder(request.data)
+            if created:
+                response = {"message": "success"}
+                return Response(response, status=status.HTTP_202_ACCEPTED)
+        response = {"message": f"failed {serializer.error_messages}"}
+        return Response(response, status=status.HTTP_417_EXPECTATION_FAILED)
+
+    def get(self, request):
+        model = Car.objects.all()
+        serializer = OrderSerializer(model, many=True)
+        if len(serializer.data) > 0:
+            return Response({"message": "success", "responsePayload": serializer.data})
+        return Response({"message": "failed", "responsePayload": []})

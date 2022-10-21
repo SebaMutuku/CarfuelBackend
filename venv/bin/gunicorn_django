@@ -1,4 +1,4 @@
-#!/Users/sebastianmutuku/PycharmProjects/CarfuelBackEnd/venv/bin/python
+#!/Users/ades/PycharmProjects/CarfuelBackend/venv/bin/python3.10
 # -*- coding: utf-8 -*-
 import re
 import sys
