@@ -6,6 +6,7 @@ from CarfuApp.models import Cars
 
 
 class CarSerializer(serializers.ModelSerializer):
+
     class Meta:
         fields = (
             'make',
@@ -19,14 +20,13 @@ class CarSerializer(serializers.ModelSerializer):
             'car_description')
         model = Cars
 
-    def saveCar(self, data):
-        image_url = datetime.datetime.now()
-        make = data['car_make']
-        model = data['car_model']
-        yom = data['car_yom']
-        mileage = data['car_mileage']
-        price = data['car_price']
-        car_description = data['car_desc']
+    def saveCar(self, data, image):
+        make = data['make']
+        model = data['model']
+        yom = data['yom']
+        mileage = data['mileage']
+        price = data['price']
+        car_description = data['car_description']
         color = data["color"]
         saved_on = datetime.datetime.now()
         try:
@@ -36,7 +36,7 @@ class CarSerializer(serializers.ModelSerializer):
                 make=make,
                 mileage=mileage,
                 model=model,
-                image_url=image_url,
+                imageUrl=image,
                 yom=yom,
                 price=price,
                 color=color
@@ -48,5 +48,20 @@ class CarSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_car_brands():
-        car_brands = Cars.objects.values_list('make')
-        return car_brands
+        try:
+            car_brands = Cars.objects.values("make", "model", "color", "yom", "car_description", "price")
+            return car_brands
+        except Exception as e:
+            print(e)
+            return None
+
+    @staticmethod
+    def get_all_cars():
+        try:
+            cars = Cars.objects.all()
+            if cars:
+                return cars
+            return None
+        except Exception as e:
+            print(e)
+            return None

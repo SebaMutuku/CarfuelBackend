@@ -134,7 +134,7 @@ WSGI_APPLICATION = 'CarfuelBackEnd.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'CarfuelDB',
         'USER': os.getenv("DB_USER"),
         'PASSWORD': os.getenv("DB_PASS"),
@@ -180,15 +180,13 @@ USE_TZ = True
 PROJECT_ROOT = os.path.join(os.path.abspath(__file__))
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-MEDIA_URL = '/car_images/'
-MEDIA_ROOT = os.path.join(BASE_DIR, '/static/car_images')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
+MEDIA_URL = 'static/'
 PUBLIC_KEY_NAME = STATIC_ROOT + '/keys/publicKey.pem'
 PRIVATE_KEY_NAME = STATIC_ROOT + '/keys/privateKey.pem'
 STATIC_URL = '/static/'
 
 # Extra lookup directories for collectstatic to find static files
-
-
 #  Add configuration for static files storage using whitenoise
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 prod_db = dj_database_url.config(conn_max_age=500)

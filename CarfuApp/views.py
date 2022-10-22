@@ -2,8 +2,7 @@ from rest_framework import status, views
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.decorators import parser_classes
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.parsers import JSONParser
-from rest_framework.parsers import MultiPartParser
+from rest_framework.parsers import JSONParser, MultiPartParser
 from rest_framework.permissions import AllowAny
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
@@ -101,13 +100,13 @@ class CarsView(views.APIView):
     serializer_class = CarSerializer.CarSerializer
     permission_classes = (AllowAny,)
     authentication_classes = (SessionAuthentication, BasicAuthentication)
-    parser_classes(JSONParser, )
+    parser_classes(MultiPartParser, )
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         if serializer.is_valid():
-            created = serializer.saveCar(request.data)
+            created = serializer.saveCar(request.POST, request.FILES['image'])
             if created:
                 response = {"message": "success"}
                 return Response(response, status=status.HTTP_202_ACCEPTED)
@@ -115,22 +114,19 @@ class CarsView(views.APIView):
         return Response(response, status=status.HTTP_417_EXPECTATION_FAILED)
 
     def get(self, request):
-        serializer = self.serializer_class
-        if len(serializer.data) > 0:
-            return Response({"message": "success", "responsePayload": serializer.data})
-        return Response({"message": "failed", "responsePayload": []})
+        serializer = CarSerializer.CarSerializer(self.serializer_class.get_all_cars(), many=True,
+                                                 context={'request': request})
+        response = {"message": "success", "responsePayload": serializer.data}
+        return Response(response, status=status.HTTP_200_OK)
 
 
 class CarBrandsView(views.APIView):
-    querySet = models.Cars.objects.values_list('make')
     renderer_classes = (JSONRenderer,)
     serializer_class = CarSerializer.CarSerializer
     permission_classes = (AllowAny,)
     authentication_classes = (SessionAuthentication, BasicAuthentication)
-    parser_classes(JSONParser)
+    parser_classes(JSONParser, )
 
     def get(self, request):
-        serializer = self.serializer_class
-        if serializer.is_valid(raise_exception=True):
-            return Response({"message": "success", "responsePayload": serializer.data})
-        return Response({"message": "failed", "responsePayload": []})
+        serializer = CarSerializer.CarSerializer(self.serializer_class.get_car_brands(), many=True)
+        return Response({"message": "success", "responsePayload": serializer.data})

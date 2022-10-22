@@ -100,3 +100,7 @@ Setting DISABLE_COLLECTSTATIC and restarting
 17. git push heroku main 
 18. heroku run python manage.py migrate
 
+#Solve pycopg2 issues
+* brew install openssl
+* export LDFLAGS="-L/usr/local/opt/openssl/lib"
+* export CPPFLAGS="-I/usr/local/opt/openssl/include"

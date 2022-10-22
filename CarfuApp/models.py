@@ -289,7 +289,7 @@ class Cars(models.Model):
     mileage = models.CharField(blank=True, max_length=1000)
     sell_status = models.BooleanField(default=False, null=False)
     price = models.CharField(blank=False, max_length=1000)
-    imageUrl = models.ImageField(upload_to="car_images/", blank=True,
+    imageUrl = models.ImageField(upload_to="images/%Y/%m/%d", blank=True,
                                  validators=[FileExtensionValidator(['png', 'jpg', 'gif', 'jpeg'])])
     car_description = models.CharField(blank=True, max_length=1000)
     saved_on = models.DateTimeField()

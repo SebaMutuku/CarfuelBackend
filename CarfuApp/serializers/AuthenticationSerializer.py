@@ -107,7 +107,7 @@ class ReadUsers(serializers.ModelSerializer):
         )
 
     @staticmethod
-    def get_user(self):
+    def get_user():
         users = Users.objects.all().defer("password", "token")
         if users is not None:
             return users

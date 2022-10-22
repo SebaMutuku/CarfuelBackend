@@ -262,7 +262,7 @@ class Migration(migrations.Migration):
                 ('mileage', models.CharField(blank=True, max_length=1000)),
                 ('sell_status', models.BooleanField(default=False)),
                 ('price', models.CharField(max_length=1000)),
-                ('imageUrl', models.ImageField(blank=True, upload_to='car_images/', validators=[django.core.validators.FileExtensionValidator(['png', 'jpg', 'gif', 'jpeg'])])),
+                ('imageUrl', models.ImageField(blank=True, upload_to='images/', validators=[django.core.validators.FileExtensionValidator(['png', 'jpg', 'gif', 'jpeg'])])),
                 ('car_description', models.CharField(blank=True, max_length=1000)),
                 ('saved_on', models.DateTimeField()),
             ],
