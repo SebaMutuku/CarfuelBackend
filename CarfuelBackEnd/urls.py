@@ -14,9 +14,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.conf.urls import url
+from django.conf.urls.static import static
 from django.contrib import admin
 
 from CarfuApp import views
+from CarfuelBackEnd import settings
 
 app_name = 'CarfuApp'
 
@@ -33,3 +35,6 @@ urlpatterns = [
     # url('api/users/googleApi', views.GoogleView.as_view(), name='GoogleApi'),
     # url('api/login', login_views.LoginView.as_view(), name='log'),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

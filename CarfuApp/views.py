@@ -3,6 +3,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.decorators import parser_classes
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.parsers import JSONParser
+from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import AllowAny
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
@@ -10,7 +11,7 @@ from rest_framework.views import APIView
 
 from CarfuApp.serializers import OrderSerializer, CarSerializer, AuthenticationSerializer
 from . import models
-from .models import Orders, Users
+from .models import Users
 
 
 class Register(views.APIView):
@@ -66,7 +67,7 @@ class Login(views.APIView):
 class Order(APIView):
     querySet = models.Orders.objects.all()
     renderer_classes = (JSONRenderer,)
-    serializer_class = OrderSerializer
+    serializer_class = OrderSerializer.OrderSerializer
     permission_classes = (AllowAny,)
     authentication_classes = (SessionAuthentication, BasicAuthentication)
     parser_classes(JSONParser, )
@@ -87,8 +88,7 @@ class Order(APIView):
             return Response(response, status=status.HTTP_200_OK)
 
     def get(self, request):
-        model = Orders.objects.all()
-        serializer = OrderSerializer(model, many=True)
+        serializer = self.serializer_class
         return Response({"message": "success", "responsePayload": serializer.data})
 
     def update(self):
@@ -98,7 +98,7 @@ class Order(APIView):
 class CarsView(views.APIView):
     querySet = models.Cars.objects.all()
     renderer_classes = (JSONRenderer,)
-    serializer_class = CarSerializer
+    serializer_class = CarSerializer.CarSerializer
     permission_classes = (AllowAny,)
     authentication_classes = (SessionAuthentication, BasicAuthentication)
     parser_classes(JSONParser, )
@@ -127,7 +127,7 @@ class CarBrandsView(views.APIView):
     serializer_class = CarSerializer.CarSerializer
     permission_classes = (AllowAny,)
     authentication_classes = (SessionAuthentication, BasicAuthentication)
-    parser_classes(JSONParser, )
+    parser_classes(JSONParser)
 
     def get(self, request):
         serializer = self.serializer_class

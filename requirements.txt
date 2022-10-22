@@ -49,5 +49,3 @@ social-auth-core==4.3.0
 sqlparse==0.2.4
 urllib3==1.26.5
 whitenoise==6.2.0
-
-rsa~=4.9

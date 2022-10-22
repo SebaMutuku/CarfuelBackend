@@ -1,6 +1,7 @@
 import datetime
 
 from django.contrib.auth.base_user import BaseUserManager
+from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.utils import timezone
 
@@ -288,8 +289,8 @@ class Cars(models.Model):
     mileage = models.CharField(blank=True, max_length=1000)
     sell_status = models.BooleanField(default=False, null=False)
     price = models.CharField(blank=False, max_length=1000)
-    imageUrl = models.ImageField(upload_to="car_images/", blank=True)
-    image_data = models.BinaryField(blank=True)
+    imageUrl = models.ImageField(upload_to="car_images/", blank=True,
+                                 validators=[FileExtensionValidator(['png', 'jpg', 'gif', 'jpeg'])])
     car_description = models.CharField(blank=True, max_length=1000)
     saved_on = models.DateTimeField()
 

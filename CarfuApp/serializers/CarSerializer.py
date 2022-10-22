@@ -8,15 +8,15 @@ from CarfuApp.models import Cars
 class CarSerializer(serializers.ModelSerializer):
     class Meta:
         fields = (
-            'ordernumber',
-            'customerid',
-            'orderamount',
-            'orderlocation',
-            'deliverytime',
-            'orderdetails',
-            'orderstatus',
-            'deliveryagent'
-        )
+            'make',
+            'model',
+            'color',
+            'yom',
+            'mileage',
+            'sell_status',
+            'price',
+            'imageUrl',
+            'car_description')
         model = Cars
 
     def saveCar(self, data):
@@ -43,7 +43,7 @@ class CarSerializer(serializers.ModelSerializer):
             ).save()
             return True
         except Exception as e:
-            e.args
+            print(e.args)
             return False
 
     @staticmethod
