@@ -35,9 +35,10 @@ DEBUG = True
 
 # ALLOWED_HOSTS = ['carfueldjango.herokuapp.com', 'localhost:3000', ]
 # Encryption
-ENCRYPTION_BLOCK_SIZE = 32
+KEY_LENGTH = 32
 ENC_SECRET_KEY = 'dEghUzFzTXlUM3NUUEBTc1cwckQ='
 ENC_SALT = '4420d1918bbcf7686defdf9560bb5087d20076de5f77b7cb4c3b40bf46ec428b'
+
 
 # Application definition
 REST_FRAMEWORK = {
@@ -133,10 +134,10 @@ WSGI_APPLICATION = 'CarfuelBackEnd.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'CarfuelDB',
-        'USER': 'carfueluser',
-        'PASSWORD': 'carfueluser',
+        'USER': os.getenv("DB_USER"),
+        'PASSWORD': os.getenv("DB_PASS"),
         'HOST': 'localhost',
         'PORT': 5432,
     }
@@ -178,6 +179,8 @@ USE_TZ = True
 
 PROJECT_ROOT = os.path.join(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+PUBLIC_KEY_NAME = STATIC_ROOT + '/keys/publicKey.pem'
+PRIVATE_KEY_NAME = STATIC_ROOT + '/keys/privateKey.pem'
 STATIC_URL = '/static/'
 
 # Extra lookup directories for collectstatic to find static files

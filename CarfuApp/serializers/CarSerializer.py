@@ -45,3 +45,8 @@ class CarSerializer(serializers.ModelSerializer):
         except Exception as e:
             e.args
             return False
+
+    @staticmethod
+    def get_car_brands():
+        car_brands = Cars.objects.values_list('make')
+        return car_brands
