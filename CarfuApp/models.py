@@ -243,7 +243,7 @@ class Registeredvehicles(models.Model):
     userid = models.OneToOneField('Users', models.DO_NOTHING, db_column='userid', blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'registeredvehicles'
 
 
@@ -252,7 +252,7 @@ class Roles(models.Model):
     rolename = models.CharField(unique=True, max_length=255)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'roles'
 
     def __str__(self):
@@ -273,7 +273,7 @@ class Users(models.Model):
     is_agent = models.BooleanField(default=False, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'users'
 
     def __str__(self):
@@ -295,7 +295,7 @@ class Cars(models.Model):
     saved_on = models.DateTimeField()
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'cars'
 
     def __str__(self):
