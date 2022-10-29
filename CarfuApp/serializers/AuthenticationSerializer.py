@@ -61,7 +61,7 @@ class LoginSerializer(serializers.Serializer, PageNumberPagination):
                 login(request, user)
                 token, created = Token.objects.get_or_create(user=user)
                 user_response["token"] = token.key
-                user_response["user"] = user.username
+                user_response["username"] = user.username
                 user_response["user_id"] = user.pk
                 return user_response
             return user
