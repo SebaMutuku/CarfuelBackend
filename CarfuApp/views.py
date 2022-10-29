@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from rest_framework import status, views
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.decorators import parser_classes
@@ -10,12 +11,11 @@ from rest_framework.views import APIView
 
 from CarfuApp.serializers import OrderSerializer, CarSerializer, AuthenticationSerializer
 from . import models
-from .models import Users
 
 
 class Register(views.APIView):
     permission_classes = (AllowAny,)
-    querySet = models.Users.objects.all()
+    querySet = User.objects.all()
     serializer_class = AuthenticationSerializer.RegisterSerializer
     parser_classes(JSONParser, )
     pagination_class = PageNumberPagination
@@ -30,16 +30,17 @@ class Register(views.APIView):
                     status=status.HTTP_202_ACCEPTED)
             else:
                 return Response(
-                    {"message": serializer.error_messages, "responseCode": status.HTTP_208_ALREADY_REPORTED},
+                    {"message": user, "responseCode": status.HTTP_208_ALREADY_REPORTED},
                     status=status.HTTP_208_ALREADY_REPORTED)
 
         else:
             print(serializer.errors)
-            return Response({"message": "username already exists", "responseCode": status.HTTP_208_ALREADY_REPORTED},
-                            status.HTTP_208_ALREADY_REPORTED)
+            return Response(
+                {"message": "user with that username exists", "responseCode": status.HTTP_208_ALREADY_REPORTED},
+                status.HTTP_208_ALREADY_REPORTED)
 
     def get(self, request):
-        user = Users.objects.all().defer("password", "token")
+        user = User.objects.all().defer("password")
         serializer = AuthenticationSerializer.ReadUsers(user, many=True)
         response = {"message": "success", "responsePayload": serializer.data}
         return Response(response, status=status.HTTP_200_OK)
@@ -53,11 +54,11 @@ class Login(views.APIView):
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            user = serializer.authenticateuser(request.data)
+            user = serializer.authenticateuser(request)
             if user:
                 return Response({"user": user, "message": "Successfully logged in"},
                                 status=status.HTTP_200_OK)
-        return Response({"user": [], "message": "Invalid Credentials"}, status.HTTP_401_UNAUTHORIZED)
+        return Response({"user": None, "message": "Invalid Credentials"}, status.HTTP_401_UNAUTHORIZED)
 
     def get(self, request):
         return Response({"user": [], "message": "Method not Allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -115,7 +116,7 @@ class CarsView(views.APIView):
 
     def get(self, request):
         serializer = CarSerializer.CarSerializer(self.serializer_class.get_all_cars(), many=True,
-                                                 context={'request': request})
+                                                 context={"request": request})
         response = {"message": "success", "responsePayload": serializer.data}
         return Response(response, status=status.HTTP_200_OK)
 

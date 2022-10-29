@@ -7,6 +7,7 @@ from CarfuApp.models import Cars
 
 class CarSerializer(serializers.ModelSerializer):
 
+
     class Meta:
         fields = (
             'make',
@@ -19,6 +20,10 @@ class CarSerializer(serializers.ModelSerializer):
             'imageUrl',
             'car_description')
         model = Cars
+        image_url = serializers.SerializerMethodField('get_imageUrl')
+
+    def get_imageUrl(self, obj):
+        return obj.image.url
 
     def saveCar(self, data, image):
         make = data['make']

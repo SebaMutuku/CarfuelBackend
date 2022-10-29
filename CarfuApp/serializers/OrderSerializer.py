@@ -1,9 +1,9 @@
 import datetime
 
+from django.contrib.auth.models import User
 from rest_framework import serializers
-from yaml.serializer import Serializer
 
-from CarfuApp.models import Orders, Users
+from CarfuApp.models import Orders
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -30,10 +30,10 @@ class OrderSerializer(serializers.ModelSerializer):
 		orderdetails = data['orderdetails']
 		orderstatus = data['orderstatus']
 		try:
-			deliveryagent = Users.objects.get(user_id=data['deliveryagent'])
-			customerid = Users.objects.get(user_id=data['customerid'])
-		except Users.DoesNotExist:
-			return Serializer.error()
+			deliveryagent = User.objects.get(username=data['deliveryagent'])
+			customerid = User.objects.get(pk=data['customerid'])
+		except User.DoesNotExist as e:
+			return e
 		
 		order = Orders.objects.create(orderstatus=orderstatus,
 		                              orderdetails=orderdetails,

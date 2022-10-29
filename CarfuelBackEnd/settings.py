@@ -173,18 +173,18 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 PROJECT_ROOT = os.path.join(os.path.abspath(__file__))
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
-MEDIA_URL = 'static/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'images')
+MEDIA_URL = 'images/'
 PUBLIC_KEY_NAME = STATIC_ROOT + '/keys/publicKey.pem'
 PRIVATE_KEY_NAME = STATIC_ROOT + '/keys/privateKey.pem'
-STATIC_URL = '/static/'
+STATIC_URL = '/staticfiles/'
 
 # Extra lookup directories for collectstatic to find static files
 #  Add configuration for static files storage using whitenoise

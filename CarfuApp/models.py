@@ -1,6 +1,7 @@
 import datetime
 
 from django.contrib.auth.base_user import BaseUserManager
+from django.contrib.auth.models import User
 from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.utils import timezone
@@ -220,7 +221,7 @@ class Orders(models.Model):
     orderid = models.AutoField(primary_key=True)
     ordernumber = models.CharField(max_length=50)
     ordertime = models.DateTimeField()
-    customerid = models.OneToOneField('Users', models.DO_NOTHING, db_column='customerid')
+    customerid = models.OneToOneField(User, models.DO_NOTHING, db_column='pk')
     orderamount = models.FloatField()
     orderlocation = models.CharField(max_length=255)
     deliverytime = models.DateTimeField(blank=True, null=True)
@@ -240,7 +241,7 @@ class Registeredvehicles(models.Model):
     carcolor = models.CharField(max_length=50)
     carregnumber = models.CharField(max_length=50)
     registeredon = models.DateTimeField()
-    userid = models.OneToOneField('Users', models.DO_NOTHING, db_column='userid', blank=True, null=True)
+    userid = models.OneToOneField(User, models.DO_NOTHING, db_column='pk', blank=True, null=True)
 
     class Meta:
         managed = True
@@ -257,27 +258,6 @@ class Roles(models.Model):
 
     def __str__(self):
         return self.rolename
-
-
-class Users(models.Model):
-    user_id = models.AutoField(primary_key=True)
-    username = models.CharField(unique=True, max_length=50)
-    password = models.CharField(max_length=50)
-    phonenumber = models.CharField(unique=False, max_length=255, blank=True, null=True)
-    created_on = models.DateTimeField()
-    last_login = models.DateTimeField(blank=True, null=True)
-    is_admin = models.BooleanField(default=False, null=False)
-    is_active = models.BooleanField(default=True, null=False)
-    token = models.CharField(max_length=255, blank=True, null=True)
-    roleid = models.OneToOneField(Roles, models.DO_NOTHING, db_column='roleid', blank=True, null=True)
-    is_agent = models.BooleanField(default=False, null=True)
-
-    class Meta:
-        managed = True
-        db_table = 'users'
-
-    def __str__(self):
-        return self.username
 
 
 class Cars(models.Model):
@@ -303,36 +283,36 @@ class Cars(models.Model):
 
 
 class AddUsersIntoDb(BaseUserManager):
-    def create_user(self, password, **extra_fields):
-        user = Users.objects.create(username=extra_fields.get('username'),
-                                    roleid=extra_fields.get('roleid'),
-                                    created_on=datetime.datetime.now(tz=timezone.utc),
-                                    is_admin=extra_fields.get('is_admin'),
-                                    is_agent=extra_fields.get('is_agent'), is_active=True, password=password,
-                                    phonenumber=extra_fields.get('phonenumber'))
+    @staticmethod
+    def create_user(username, password, **kwargs):
+        user = User.objects.create(username=username,
+                                   is_superuser=False,
+                                   is_staff=False,
+                                   is_active=True,
+                                   email=kwargs.get('email'))
+        user.set_password(password)
         return user
 
-    def create_superuser(self, password=None, username=None, roleId=None, phonenumber=None):
-        user = self.create_user(password=password, username=username, is_active=True, is_admin=True,
-                                roleid=roleId, phonenumber=phonenumber)
-        user.is_agent = False
+    def create_superuser(self, password=None, username=None, phonenumber=None):
+        user = self.create_user(username=username, password=password, email=phonenumber, is_active=True)
+        user.is_staff = False
         user.is_admin = True
+        user.is_superuser = True
         user.created_on = datetime.datetime.now(tz=timezone.utc)
         user.save()
         return user
 
-    def create_normal_user(self, password=None, username=None, roleId=None, phonenumber=None):
-        user = self.create_user(password=password, username=username, roleid=roleId, phonenumber=phonenumber)
-        user.created_on = datetime.datetime.now(tz=timezone.utc)
-        user.is_agent = False
+    def create_normal_user(self, username=None, password=None, phonenumber=None):
+        user = self.create_user(username=username, password=password, email=phonenumber)
         user.is_admin = False
+        user.is_superuser = False
+        user.is_staff = False
         user.save()
         return user
 
-    def create_agent(self, password=None, username=None, phonenumber=None, roleId=None):
-        user = self.create_user(password=password, username=username, roleid=roleId, phonenumber=phonenumber)
-        user.is_agent = True
+    def create_agent(self, username=None, password=None, phonenumber=None):
+        user = self.create_user(username=username, password=password, email=phonenumber)
+        user.is_staff = True
         user.is_admin = False
-        user.created_on = datetime.datetime.now(tz=timezone.utc)
         user.save()
         return user
