@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.db.models import Q
 from rest_framework import status, views
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
 from rest_framework.decorators import parser_classes
@@ -28,22 +29,48 @@ class Login(views.APIView):
         return Response({"user": None, "message": "Invalid Credentials"}, status.HTTP_401_UNAUTHORIZED)
 
     def get(self, request):
-        return Response({"user": [], "message": "Method not Allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        username = request.data.get("username")
+        user = User.objects.filter(username=username)
+        if (user.username is not None and user.username == username) or (
+                user.email is not None and user.email == username):
+            return Response({"message": "User found"}, status=status.HTTP_200_OK)
+        return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class Logout(views.APIView):
-    permission_classes = (IsAuthenticated, BasicAuthentication, TokenAuthentication)
-    serializer_class = AuthenticationSerializer.LoginSerializer
+    permission_classes = ([IsAuthenticated])
+    authentication_classes = ([BasicAuthentication, TokenAuthentication])
     parser_classes(JSONParser, )
+    serializer_class = AuthenticationSerializer.LoginSerializer
 
     def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            logged_out = serializer.logout(request)
-            if logged_out:
-                return Response({"message": "Successfully logged out"},
-                                status=status.HTTP_200_OK)
-            return Response({"message": "Failed"}, status.HTTP_401_UNAUTHORIZED)
+        username = request.data["username"]
+        user = User.objects.filter(Q(username=username) | Q(email=username))
+        if (user.username is not None and user.username == username) or (
+                user.email is not None and user.email == username):
+            return Response({"message": "User found"}, status=status.HTTP_200_OK)
+        return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+class GetSingleUser(views.APIView):
+    permission_classes = ([AllowAny])
+    authentication_classes = ([BasicAuthentication, TokenAuthentication])
+    parser_classes(JSONParser, )
+    serializer_class = AuthenticationSerializer.LoginSerializer
+
+    def post(self, request):
+        uname = request.data["username"]
+        try:
+            user = User.objects.get(Q(username=uname) | Q(email=uname))
+            if (user.username is not None and user.username == uname) or (
+                    user.email is not None and user.email == uname):
+                return Response({"message": "User found", "status": status.HTTP_200_OK}, status=status.HTTP_200_OK)
+            return Response({"message": "User not found", "status": status.HTTP_404_NOT_FOUND},
+                            status=status.HTTP_404_NOT_FOUND)
+        except BaseException as e:
+            print(e)
+            return Response({"message": "User not found", "status": status.HTTP_417_EXPECTATION_FAILED},
+                            status=status.HTTP_417_EXPECTATION_FAILED)
 
 
 class Register(views.APIView):
@@ -79,15 +106,12 @@ class Register(views.APIView):
         return Response(response, status=status.HTTP_200_OK)
 
 
-
-
-
 class Order(APIView):
     querySet = models.Orders.objects.all()
     renderer_classes = (JSONRenderer,)
     serializer_class = OrderSerializer.OrderSerializer
-    permission_classes = (AllowAny,)
-    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (BasicAuthentication, TokenAuthentication)
     parser_classes(JSONParser, )
 
     def post(self, request):
@@ -117,8 +141,8 @@ class CarsView(views.APIView):
     querySet = models.Cars.objects.all()
     renderer_classes = (JSONRenderer,)
     serializer_class = CarSerializer.CarSerializer
-    permission_classes = (AllowAny,)
-    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = ([BasicAuthentication, TokenAuthentication])
     parser_classes(MultiPartParser, )
 
     def post(self, request):

@@ -43,7 +43,9 @@ ENC_SALT = '4420d1918bbcf7686defdf9560bb5087d20076de5f77b7cb4c3b40bf46ec428b'
 # Application definition
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ],
 }
 INSTALLED_APPS = [

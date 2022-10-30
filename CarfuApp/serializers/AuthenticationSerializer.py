@@ -57,7 +57,6 @@ class LoginSerializer(serializers.Serializer, PageNumberPagination):
         user_response = dict()
         try:
             user = authenticate(username=uname, password=pword)
-            print(user.is_superuser, user.is_staff)
             if user is not None and user.check_password(pword):
                 login(request, user)
                 token, created = Token.objects.get_or_create(user=user)
