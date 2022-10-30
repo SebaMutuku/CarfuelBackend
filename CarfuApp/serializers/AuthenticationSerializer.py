@@ -1,5 +1,5 @@
 import jwt
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse
@@ -57,17 +57,30 @@ class LoginSerializer(serializers.Serializer, PageNumberPagination):
         user_response = dict()
         try:
             user = authenticate(username=uname, password=pword)
+            print(user.is_superuser, user.is_staff)
             if user is not None and user.check_password(pword):
                 login(request, user)
                 token, created = Token.objects.get_or_create(user=user)
+                role_id = 1 if user.is_superuser else 2 if user.is_staff else 3
                 user_response["token"] = token.key
                 user_response["username"] = user.username
+                user_response["role_id"] = role_id
                 user_response["user_id"] = user.pk
+
                 return user_response
             return user
         except (User.DoesNotExist or Exception) as e:
             print("Exception is ", e)
             return e
+
+    @staticmethod
+    def logout(request):
+        try:
+            logout(request)
+            return True
+        except Exception as e:
+            print(e)
+            return False
 
 
 class RegisterSerializer(serializers.ModelSerializer, PageNumberPagination):

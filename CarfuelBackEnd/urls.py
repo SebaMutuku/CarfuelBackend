@@ -27,9 +27,11 @@ urlpatterns = [
     re_path(r'^admin/', admin.site.urls),
     re_path(r'^api/users/login', views.Login.as_view(), name='Login'),
     re_path('api/users/register', views.Register.as_view(), name='Register'),
+    re_path('api/users/logout', views.Logout.as_view(), name='logout'),
     re_path('api/orders/createOrder', views.Order.as_view(), name='CreateOrder'),
     re_path('api/cars/allcars', views.CarsView.as_view(), name='cars'),
-    re_path('api/cars/carbrands', views.CarBrandsView.as_view(), name='carbrands')
+    re_path('api/cars/carbrands', views.CarBrandsView.as_view(), name='carbrands'),
+
     # url('api/users/listusers', views.FetchUsers.as_view(), name='ListUsers'),
     # url('api/users/logout', views.Logout.as_view(), name='Logout'),
     # url('api/users/findbymail', views.FindUserByEmail.as_view(), name='FindUsersByEmail'),

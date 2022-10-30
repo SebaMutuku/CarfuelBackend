@@ -1,16 +1,49 @@
 from django.contrib.auth.models import User
 from rest_framework import status, views
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
 from rest_framework.decorators import parser_classes
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.parsers import JSONParser, MultiPartParser
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from CarfuApp.serializers import OrderSerializer, CarSerializer, AuthenticationSerializer
 from . import models
+
+
+class Login(views.APIView):
+    permission_classes = (AllowAny,)
+    serializer_class = AuthenticationSerializer.LoginSerializer
+    parser_classes(JSONParser, )
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            user = serializer.authenticateuser(request)
+            if user:
+                return Response({"user": user, "message": "Successfully logged in"},
+                                status=status.HTTP_200_OK)
+        return Response({"user": None, "message": "Invalid Credentials"}, status.HTTP_401_UNAUTHORIZED)
+
+    def get(self, request):
+        return Response({"user": [], "message": "Method not Allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+class Logout(views.APIView):
+    permission_classes = (IsAuthenticated, BasicAuthentication, TokenAuthentication)
+    serializer_class = AuthenticationSerializer.LoginSerializer
+    parser_classes(JSONParser, )
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            logged_out = serializer.logout(request)
+            if logged_out:
+                return Response({"message": "Successfully logged out"},
+                                status=status.HTTP_200_OK)
+            return Response({"message": "Failed"}, status.HTTP_401_UNAUTHORIZED)
 
 
 class Register(views.APIView):
@@ -46,22 +79,7 @@ class Register(views.APIView):
         return Response(response, status=status.HTTP_200_OK)
 
 
-class Login(views.APIView):
-    permission_classes = (AllowAny,)
-    serializer_class = AuthenticationSerializer.LoginSerializer
-    parser_classes(JSONParser, )
 
-    def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            user = serializer.authenticateuser(request)
-            if user:
-                return Response({"user": user, "message": "Successfully logged in"},
-                                status=status.HTTP_200_OK)
-        return Response({"user": None, "message": "Invalid Credentials"}, status.HTTP_401_UNAUTHORIZED)
-
-    def get(self, request):
-        return Response({"user": [], "message": "Method not Allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 class Order(APIView):
@@ -124,7 +142,7 @@ class CarsView(views.APIView):
 class CarBrandsView(views.APIView):
     renderer_classes = (JSONRenderer,)
     serializer_class = CarSerializer.CarSerializer
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
     authentication_classes = (SessionAuthentication, BasicAuthentication)
     parser_classes(JSONParser, )
 
