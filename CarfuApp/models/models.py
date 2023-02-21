@@ -218,7 +218,6 @@ class Oauth2ProviderRefreshtoken(models.Model):
 
 
 class Orders(models.Model):
-    orderid = models.AutoField(primary_key=True)
     ordernumber = models.CharField(max_length=50)
     ordertime = models.DateTimeField()
     customerid = models.OneToOneField(User, models.DO_NOTHING, db_column='pk')
@@ -235,7 +234,6 @@ class Orders(models.Model):
 
 
 class Registeredvehicles(models.Model):
-    carid = models.AutoField(primary_key=True)
     carname = models.CharField(max_length=50)
     carmodel = models.CharField(max_length=50)
     carcolor = models.CharField(max_length=50)
@@ -261,7 +259,6 @@ class Roles(models.Model):
 
 
 class Cars(models.Model):
-    car_id = models.AutoField(primary_key=True)
     make = models.CharField(blank=False, max_length=1000)
     model = models.CharField(max_length=1000)
     color = models.CharField(max_length=20)
@@ -279,7 +276,7 @@ class Cars(models.Model):
         db_table = 'cars'
 
     def __str__(self):
-        return self.make + self.model
+        return self.make
 
 
 class AddUsersIntoDb(BaseUserManager):

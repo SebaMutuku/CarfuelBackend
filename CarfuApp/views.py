@@ -22,7 +22,7 @@ class Login(views.APIView):
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            user = serializer.authenticateuser(request)
+            user = serializer.authenticate(request)
             if user:
                 return Response({"user": user, "message": "Successfully logged in"},
                                 status=status.HTTP_200_OK)
