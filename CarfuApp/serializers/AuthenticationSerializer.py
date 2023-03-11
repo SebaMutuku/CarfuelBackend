@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from rest_framework import authentication, exceptions
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
@@ -38,7 +39,13 @@ class LoginSerializer(serializers.Serializer, PageNumberPagination):
             return ValidationError(e.args)
 
     def update(self, instance, validated_data):
-        return self.update(validated_data=instance)
+        user = None
+        try:
+            user = get_object_or_404(username=validated_data['usrname'])
+            print(user.pk)
+        except User.DoesNotExist as e:
+            print(e.args)
+        return user, None
 
     def validate(self, attrs):
         pass

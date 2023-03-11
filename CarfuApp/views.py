@@ -5,7 +5,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.decorators import parser_classes
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.parsers import JSONParser, MultiPartParser
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -36,6 +36,9 @@ class Login(views.APIView):
             return Response({"message": "User found"}, status=status.HTTP_200_OK)
         return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
+    def put(self, request):
+        pass
+
 
 class Logout(views.APIView):
     permission_classes = ([IsAuthenticated])
@@ -53,7 +56,7 @@ class Logout(views.APIView):
 
 
 class GetSingleUser(views.APIView):
-    permission_classes = ([AllowAny])
+    permission_classes = ([IsAuthenticated, IsAdminUser])
     authentication_classes = ([BasicAuthentication, TokenAuthentication])
     parser_classes(JSONParser, )
     serializer_class = AuthenticationSerializer.LoginSerializer
@@ -71,6 +74,8 @@ class GetSingleUser(views.APIView):
             print(e)
             return Response({"message": "User not found", "status": status.HTTP_417_EXPECTATION_FAILED},
                             status=status.HTTP_417_EXPECTATION_FAILED)
+    def get(self):
+        pass
 
 
 class Register(views.APIView):
