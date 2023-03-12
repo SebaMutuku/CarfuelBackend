@@ -1,4 +1,6 @@
+
 import jwt
+from deprecated import deprecated
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -9,16 +11,17 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.pagination import *
 
+from CarfuApp.interfaces.LoginInterface import LoginInterface
 from CarfuApp.models import Roles, AddUsersIntoDb, AuthUser
 from CarfuelBackEnd import settings
 
 
-class LoginSerializer(serializers.Serializer, PageNumberPagination):
-    def create(self, validated_data):
+class LoginSerializer(serializers.Serializer, PageNumberPagination, LoginInterface):
+    def create(self, data):
         try:
-            username = validated_data['username']
-            password = validated_data['password']
-            phone_number = validated_data['phone_number']
+            username = data['username']
+            password = data['password']
+            phone_number = data['phone_number']
             role = Roles.objects.get(roleid=3)
             if role.rolename == "Admin":
                 user = AddUsersIntoDb().create_superuser(password=password,
@@ -38,6 +41,8 @@ class LoginSerializer(serializers.Serializer, PageNumberPagination):
         except Exception as e:
             return ValidationError(e.args)
 
+    def validate(self, attrs):pass
+
     def update(self, instance, validated_data):
         user = None
         try:
@@ -46,9 +51,6 @@ class LoginSerializer(serializers.Serializer, PageNumberPagination):
         except User.DoesNotExist as e:
             print(e.args)
         return user, None
-
-    def validate(self, attrs):
-        pass
 
     page_size = 30
 
@@ -128,9 +130,10 @@ class ReadUsers(serializers.ModelSerializer):
             return None
 
 
+@deprecated(reason="Use Django Authentication instead")
 class DecodeToken:
     @staticmethod
-    def decodeToken(request):
+    def decode_token(request):
         headers = authentication.get_authorization_header(request).decode("ascii").split()
         if not headers or headers[0].lower() != 'token':
             loggedinuser = None
@@ -166,3 +169,7 @@ class DecodeToken:
             except AuthUser.DoesNotExist:
                 loggedinuser = None
         return loggedinuser
+
+    @classmethod
+    def test_class(cls, name):
+        return cls.test_class(name)
