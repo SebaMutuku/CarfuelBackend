@@ -1,8 +1,10 @@
+import json
 
 import jwt
 from deprecated import deprecated
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.core import serializers as serialize
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -11,37 +13,23 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.pagination import *
 
-from CarfuApp.interfaces.LoginInterface import LoginInterface
-from CarfuApp.models import Roles, AddUsersIntoDb, AuthUser
+from CarfuApp.models import AuthUser, AddUsersIntoDb
 from CarfuelBackEnd import settings
 
 
-class LoginSerializer(serializers.Serializer, PageNumberPagination, LoginInterface):
+class LoginSerializer(serializers.Serializer, PageNumberPagination):
     def create(self, data):
         try:
-            username = data['username']
-            password = data['password']
-            phone_number = data['phone_number']
-            role = Roles.objects.get(roleid=3)
-            if role.rolename == "Admin":
-                user = AddUsersIntoDb().create_superuser(password=password,
-                                                         username=username, phonenumber=phone_number)
-            elif role.rolename == "Agent":
-                user = AddUsersIntoDb().create_staffuser(
-                    password=password,
-                    username=username, phonenumber=phone_number)
-            else:
-                user = AddUsersIntoDb().create_normal_user(
-                    password=password,
-                    username=username, phonenumber=phone_number)
-            response = {'username': user.username,
-                        'user_id': user.pk,
-                        'role': role.rolename}
-            return response
-        except Exception as e:
-            return ValidationError(e.args)
+            user = AddUsersIntoDb().create_user(username=data['username'], password=data['password'],
+                                                email=data['email'])
+            user.save()
+            return json.loads(serialize.serialize('json', [user]))
+            # return {"username": user.username,
+            #         "id": user.pk,
+            #         "email": user.email}
 
-    def validate(self, attrs):pass
+        except Exception as e:
+            raise ValidationError(e)
 
     def update(self, instance, validated_data):
         user = None

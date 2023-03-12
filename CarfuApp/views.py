@@ -82,7 +82,7 @@ class GetSingleUser(views.APIView):
 
 
 class Register(views.APIView, PageNumberPagination):
-    permission_classes = ([IsAuthenticated])
+    permission_classes = (AllowAny,)
     authentication_classes = ([TokenAuthentication, BasicAuthentication])
     querySet = User.objects.all()
     serializer_class = LoginSerializer
@@ -122,24 +122,27 @@ class Order(APIView):
     querySet = models.Orders.objects.all()
     renderer_classes = (JSONRenderer,)
     serializer_class = OrderSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = ([IsAuthenticated])
     authentication_classes = (BasicAuthentication, TokenAuthentication)
     parser_classes(JSONParser, )
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        if serializer.is_valid():
-            order = serializer.create_order(request.data)
-            if order:
-                response = {"message": "Order Successful", "OrderDetails": serializer.data}
-                return Response(response, status=status.HTTP_200_OK)
-            response = {"message": "Order Failed", "OrderDetails": None}
-            return Response(response, status=status.HTTP_417_EXPECTATION_FAILED)
+        try:
+            serializer.is_valid(raise_exception=True)
+            if serializer.is_valid():
+                order = serializer.create_order(request.data)
+                if order:
+                    response = {"message": "Order Successful", "OrderDetails": serializer.data}
+                    return Response(response, status=status.HTTP_200_OK)
+                response = {"message": "Order Failed", "OrderDetails": None}
+                return Response(response, status=status.HTTP_417_EXPECTATION_FAILED)
 
-        else:
-            response = {"message": "Failed", "OrderDetails": None}
-            return Response(response, status=status.HTTP_200_OK)
+            else:
+                response = {"message": "Failed", "OrderDetails": None}
+                return Response(response, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"message": e.args}, status=status.HTTP_417_EXPECTATION_FAILED)
 
     def get(self, request):
         serializer = self.serializer_class

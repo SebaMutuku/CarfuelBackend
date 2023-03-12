@@ -8,7 +8,7 @@ class ApiTest(APITestCase):
 
     def test_login_returns_token(self):
         url = reverse("Login")
-        users = User.objects.get(any())
+        users = User.objects.get(username="", password="")
         user_data = {
             "username": "seba",
             "user_id": 5,

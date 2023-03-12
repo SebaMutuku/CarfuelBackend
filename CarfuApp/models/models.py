@@ -234,6 +234,7 @@ class Orders(models.Model):
 
 
 class Registeredvehicles(models.Model):
+    id = models.AutoField(primary_key=True)
     carname = models.CharField(max_length=50)
     carmodel = models.CharField(max_length=50)
     carcolor = models.CharField(max_length=50)
@@ -245,20 +246,8 @@ class Registeredvehicles(models.Model):
         managed = True
         db_table = 'registeredvehicles'
 
-
-class Roles(models.Model):
-    roleid = models.AutoField(primary_key=True)
-    rolename = models.CharField(unique=True, max_length=255)
-
-    class Meta:
-        managed = True
-        db_table = 'roles'
-
-    def __str__(self):
-        return self.rolename
-
-
 class Cars(models.Model):
+    id = models.AutoField(primary_key=True)
     make = models.CharField(blank=False, max_length=1000)
     model = models.CharField(max_length=1000)
     color = models.CharField(max_length=20)

@@ -1,12 +1,12 @@
 from django.contrib import admin
 
 from . import models
-from .models import Roles, Orders, Registeredvehicles
+from .models import  Orders, Registeredvehicles
 
 
-@admin.register(Roles)
-class RoleAdmin(admin.ModelAdmin):
-	list_display = [f.name for f in Roles._meta.fields]
+# @admin.register(Roles)
+# class RoleAdmin(admin.ModelAdmin):
+# 	list_display = [f.name for f in Roles._meta.fields]
 
 
 @admin.register(Orders)
