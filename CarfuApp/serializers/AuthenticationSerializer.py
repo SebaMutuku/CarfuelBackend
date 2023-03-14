@@ -24,14 +24,10 @@ class LoginSerializer(serializers.Serializer, PageNumberPagination):
         return json.loads(serialize.serialize('json', [user]))
 
     def update(self, instance, validated_data):
-        user = None
-        try:
-            instance.username = validated_data['username']
-            instance.username = validated_data['password']
-            user = get_object_or_404(username=validated_data['usrname'])
-            print(user.pk)
-        except User.DoesNotExist as e:
-            print(e.args)
+        instance.username = validated_data['username']
+        instance.username = validated_data['password']
+        user = get_object_or_404(username=validated_data['usrname'])
+        print(user.pk)
         return user, None
 
     page_size = 30
@@ -49,30 +45,21 @@ class LoginSerializer(serializers.Serializer, PageNumberPagination):
         uname = data['username']
         password = data['password']
         result = dict()
-        try:
-            user = authenticate(username=uname, password=password)
-            if user is not None and user.check_password(password):
-                login(request, user)
-                token, created = Token.objects.get_or_create(user=user)
-                role_id = 1 if user.is_superuser else 2 if user.is_staff else 3
-                result["token"] = token.key
-                result["username"] = user.username
-                result["role_id"] = role_id
-                result["user_id"] = user.pk
-                return result
-            return user
-        except (User.DoesNotExist or Exception) as e:
-            print("Exception is ", e)
-            return e.args
+        user = authenticate(username=uname, password=password)
+        if user is not None and user.check_password(password):
+            login(request, user)
+            token, created = Token.objects.get_or_create(user=user)
+            role_id = 1 if user.is_superuser else 2 if user.is_staff else 3
+            result["token"] = token.key
+            result["username"] = user.username
+            result["role_id"] = role_id
+            result["user_id"] = user.pk
+            return result
 
     @staticmethod
     def logout(request):
-        try:
-            logout(request)
-            return True
-        except Exception as e:
-            print(e)
-            return False
+        logout(request)
+        return True
 
 
 class RegisterSerializer(serializers.ModelSerializer, PageNumberPagination):

@@ -21,15 +21,12 @@ class Login(views.APIView):
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
-        try:
-            if serializer.is_valid(raise_exception=True):
-                user = serializer.authenticate(request)
-                if user:
-                    return Response({"user": user, "message": "Successfully logged in"},
-                                    status=status.HTTP_200_OK)
-            return Response({"user": None, "message": "Invalid Credentials"}, status.HTTP_401_UNAUTHORIZED)
-        except Exception as e:
-            return Response({"user": None, "message": str(e.args)}, status.HTTP_401_UNAUTHORIZED)
+        if serializer.is_valid(raise_exception=True):
+            user = serializer.authenticate(request)
+            if user:
+                return Response({"user": user, "message": "Successfully logged in"},
+                                status=status.HTTP_200_OK)
+        return Response({"user": None, "message": "Invalid Credentials"}, status.HTTP_401_UNAUTHORIZED)
 
     def get(self, request):
         username = request.data.get("username")
@@ -66,17 +63,12 @@ class GetSingleUser(views.APIView):
 
     def post(self, request):
         uname = request.data["username"]
-        try:
-            user = User.objects.get(Q(username=uname) | Q(email=uname))
-            if (user.username is not None and user.username == uname) or (
-                    user.email is not None and user.email == uname):
-                return Response({"message": "User found", "status": status.HTTP_200_OK}, status=status.HTTP_200_OK)
-            return Response({"message": "User not found", "status": status.HTTP_404_NOT_FOUND},
-                            status=status.HTTP_404_NOT_FOUND)
-        except BaseException as e:
-            print(e)
-            return Response({"message": "User not found", "status": status.HTTP_417_EXPECTATION_FAILED},
-                            status=status.HTTP_417_EXPECTATION_FAILED)
+        user = User.objects.get(Q(username=uname) | Q(email=uname))
+        if (user.username is not None and user.username == uname) or (
+                user.email is not None and user.email == uname):
+            return Response({"message": "User found", "status": status.HTTP_200_OK}, status=status.HTTP_200_OK)
+        return Response({"message": "User not found", "status": status.HTTP_404_NOT_FOUND},
+                        status=status.HTTP_404_NOT_FOUND)
 
     def get(self):
         pass
@@ -126,21 +118,18 @@ class Order(APIView):
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
-        try:
-            serializer.is_valid(raise_exception=True)
-            if serializer.is_valid():
-                order = serializer.create_order(request.data)
-                if order:
-                    response = {"message": "Order Successful", "OrderDetails": serializer.data}
-                    return Response(response, status=status.HTTP_200_OK)
-                response = {"message": "Order Failed", "OrderDetails": None}
-                return Response(response, status=status.HTTP_417_EXPECTATION_FAILED)
-
-            else:
-                response = {"message": "Failed", "OrderDetails": None}
+        serializer.is_valid(raise_exception=True)
+        if serializer.is_valid():
+            order = serializer.create(request.data)
+            if order:
+                response = {"message": "Order Successful", "OrderDetails": serializer.data}
                 return Response(response, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({"message": e.args}, status=status.HTTP_417_EXPECTATION_FAILED)
+            response = {"message": "Order Failed", "OrderDetails": None}
+            return Response(response, status=status.HTTP_417_EXPECTATION_FAILED)
+
+        else:
+            response = {"message": "Failed", "OrderDetails": None}
+            return Response(response, status=status.HTTP_200_OK)
 
     def get(self, request):
         serializer = self.serializer_class
