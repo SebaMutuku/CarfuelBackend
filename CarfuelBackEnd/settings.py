@@ -47,6 +47,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
+    'EXCEPTION_HANDLER': 'CarfuApp.utils.Exception.exceptionhandler'
 }
 INSTALLED_APPS = [
     'django.contrib.admin',

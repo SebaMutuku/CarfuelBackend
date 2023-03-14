@@ -5,7 +5,6 @@ from deprecated import deprecated
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.core import serializers as serialize
-from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import authentication, exceptions
@@ -19,21 +18,16 @@ from CarfuelBackEnd import settings
 
 class LoginSerializer(serializers.Serializer, PageNumberPagination):
     def create(self, data):
-        try:
-            user = AddUsersIntoDb().create_user(username=data['username'], password=data['password'],
-                                                email=data['email'])
-            user.save()
-            return json.loads(serialize.serialize('json', [user]))
-            # return {"username": user.username,
-            #         "id": user.pk,
-            #         "email": user.email}
-
-        except Exception as e:
-            raise ValidationError(e)
+        user = AddUsersIntoDb().create_user(username=data['username'], password=data['password'],
+                                            email=data['email'])
+        user.save()
+        return json.loads(serialize.serialize('json', [user]))
 
     def update(self, instance, validated_data):
         user = None
         try:
+            instance.username = validated_data['username']
+            instance.username = validated_data['password']
             user = get_object_or_404(username=validated_data['usrname'])
             print(user.pk)
         except User.DoesNotExist as e:

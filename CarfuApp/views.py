@@ -77,6 +77,7 @@ class GetSingleUser(views.APIView):
             print(e)
             return Response({"message": "User not found", "status": status.HTTP_417_EXPECTATION_FAILED},
                             status=status.HTTP_417_EXPECTATION_FAILED)
+
     def get(self):
         pass
 
@@ -105,11 +106,8 @@ class Register(views.APIView, PageNumberPagination):
                     {"message": user, "responseCode": status.HTTP_208_ALREADY_REPORTED},
                     status=status.HTTP_208_ALREADY_REPORTED)
 
-        else:
-            print(serializer.errors)
-            return Response(
-                {"message": "user with that username exists", "responseCode": status.HTTP_208_ALREADY_REPORTED},
-                status.HTTP_208_ALREADY_REPORTED)
+        return Response({"message": "user with that username exists", "responseCode": status.HTTP_208_ALREADY_REPORTED},
+                        status.HTTP_208_ALREADY_REPORTED)
 
     def get(self, request):
         user = User.objects.all().defer("password")
