@@ -16,18 +16,25 @@ from CarfuelBackEnd import settings
 
 
 class LoginSerializer(serializers.Serializer, PageNumberPagination):
+    search_fields = ['username', 'email']
+
     def create(self, data):
         user = AddUsersIntoDb().create_user(username=data['username'], password=data['password'],
                                             email=data['email'])
         user.save()
         return json.loads(serialize.serialize('json', [user]))
 
-    def update(self, instance, validated_data):
-        instance.username = validated_data['username']
-        instance.username = validated_data['password']
-        user = get_object_or_404(username=validated_data['usrname'])
-        print(user.pk)
-        return user, None
+    def update(self, validated_data, pk):
+        user = User.objects.get(pk=pk)
+        user.username = validated_data['username']
+        user.email = validated_data['email']
+        # user.first_name = validated_data['first_name']
+        # user.last_name = validated_data['last_name']
+        # user.is_superuser = validated_data['is_superuser']
+        # user.is_active = validated_data['is_active']
+        # user.is_staff = validated_data['is_staff']
+        user.save()
+        return json.loads(serialize.serialize('json', [user])), None
 
     page_size = 30
 
@@ -71,6 +78,7 @@ class RegisterSerializer(serializers.ModelSerializer, PageNumberPagination):
 class ReadUsers(serializers.ModelSerializer):
     class Meta:
         model = User
+        read_only_fields = ['password']
         fields = (
             'id',
             'username',

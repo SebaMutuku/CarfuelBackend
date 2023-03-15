@@ -28,15 +28,18 @@ class Login(views.APIView):
                                 status=status.HTTP_200_OK)
         return Response({"user": None, "message": "Invalid Credentials"}, status.HTTP_401_UNAUTHORIZED)
 
-    def get(self, request):
-        username = request.data.get("username")
-        user = User.objects.filter(username=username)
-        if (user.username is not None and user.username == username) or (user.email is not None and user.email == username):
-            return Response({"message": "User found"}, status=status.HTTP_200_OK)
-        return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+    def get(self, request, pk, format=None):
+        user = User.objects.filter(pk=pk)
+        if user:
+            return Response({"message": "User found", "data": user}, status=status.HTTP_200_OK)
+        return Response({"message": "User not found", "data": None}, status=status.HTTP_404_NOT_FOUND)
 
-    def put(self, request):
-        pass
+    def put(self, request, pk, format=None):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            user = serializer.update(validated_data=request.data, pk=pk)
+            return Response({"message": "User found", "data": user}, status=status.HTTP_200_OK)
+        return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class Logout(views.APIView):
