@@ -1,2 +1,4 @@
 **/staticfiles/keys/*
 venv/
+/CarfuelBackEnd/.env
+*.env

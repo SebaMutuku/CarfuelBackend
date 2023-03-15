@@ -39,7 +39,6 @@ PyNaCl==1.5.0
 pyparsing==3.0.9
 pyrsistent==0.18.1
 python-dateutil==2.8.1
-python-dotenv==0.21.0
 python3-openid==3.2.0
 pytz==2021.1
 pywatchman==1.4.1
@@ -58,3 +57,5 @@ urllib3==1.26.5
 websocket-client==0.59.0
 whitenoise==6.2.0
 crypto~=1.4.1
+django-environ==0.10.0
+Deprecated~=1.2.13

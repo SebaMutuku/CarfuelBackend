@@ -7,12 +7,11 @@ from django.contrib.auth.models import User
 from django.core import serializers as serialize
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from rest_framework import authentication, exceptions
-from rest_framework import serializers
+from rest_framework import authentication, exceptions, serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.pagination import *
 
-from CarfuApp.models import AuthUser, AddUsersIntoDb
+from CarfuApp.models import AddUsersIntoDb, AuthUser
 from CarfuelBackEnd import settings
 
 

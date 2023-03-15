@@ -13,6 +13,11 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 
 import dj_database_url
+import environ
+
+env = environ.Env()
+environ.Env.read_env()
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 from django.core.checks import templates
 
@@ -22,33 +27,31 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '2ttpza*b-b6%t4(r@8gp57yee9zwi$o)v*hbrrb*m=b36ji_-2'
-TWILIO_ACCOUNT_SID = 'AC52398facebf5b22034d4c0f3ae7f8742'
-TWILIO_ACCOUNT_TOKEN = 'db6323f32936c7746365628de6d03570'
-TWILIO_PHONE_NUMBER = '+14843263703'
-MESSAGE_BIRD_ACCESS_KEY = '0Z1cpHoc0lYlSYvMkPXPQGTme'
-MESSAGE_BIRD_URL = 'https://rest.messagebird.com/messages'
+SECRET_KEY = env('SECRET_KEY')
+TWILIO_ACCOUNT_SID = env('TWILIO_ACCOUNT_SID')
+TWILIO_ACCOUNT_TOKEN = env('TWILIO_ACCOUNT_TOKEN')
+TWILIO_PHONE_NUMBER = env('TWILIO_PHONE_NUMBER')
+MESSAGE_BIRD_ACCESS_KEY = env('MESSAGE_BIRD_ACCESS_KEY')
+MESSAGE_BIRD_URL = env('MESSAGE_BIRD_URL')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = False
-DEBUG = True
+DEBUG = env("DEBUG")
 
 # ALLOWED_HOSTS = ['carfueldjango.herokuapp.com', 'localhost:3000', ]
 # Encryption
 KEY_LENGTH = 32
-ENC_SECRET_KEY = 'dEghUzFzTXlUM3NUUEBTc1cwckQ='
-ENC_SALT = '4420d1918bbcf7686defdf9560bb5087d20076de5f77b7cb4c3b40bf46ec428b'
-
+ENC_SECRET_KEY = env('ENC_SECRET_KEY')
+ENC_SALT = env('ENC_SALT')
 
 # Application definition
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
+REST_FRAMEWORK = {'DEFAULT_AUTHENTICATION_CLASSES':
+    [
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.SessionAuthentication'
     ],
-    'EXCEPTION_HANDLER': 'CarfuApp.utils.Exception.exceptionhandler'
-}
+    'EXCEPTION_HANDLER': 'CarfuApp.utils.Exception.exceptionhandler'}
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -79,7 +82,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'CarfuelBackEnd.urls'
 CORS_ORIGIN_ALLOW_ALL = True
-ALLOWED_HOSTS=['*']
+ALLOWED_HOSTS = ['*']
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_METHODS = [
     "DELETE",
@@ -102,7 +105,7 @@ CORS_ALLOW_HEADERS = [
 ]
 CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
 REST_USE_JWT = True
-ENCRYPTION_KEY = 'eJ2q__p8QCed8Q-xuN33QbHF__qO89FmmL6pK5i3SV8='
+ENCRYPTION_KEY = env('ENCRYPTION_KEY')
 # JWT_AUTH = {
 #     'JWT_VERIFY': True,
 #     'JWT_VERIFY_EXPIRATION': True,
@@ -114,8 +117,6 @@ ENCRYPTION_KEY = 'eJ2q__p8QCed8Q-xuN33QbHF__qO89FmmL6pK5i3SV8='
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates']
-        ,
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -136,11 +137,11 @@ WSGI_APPLICATION = 'CarfuelBackEnd.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'CarfuelDB',
-        'USER': os.getenv("DB_USER"),
-        'PASSWORD': os.getenv("DB_PASS"),
-        'HOST': 'localhost',
-        'PORT': 5432,
+        'NAME': env('DB_NAME'),
+        'USER': env("DB_USER"),
+        'PASSWORD': env("DB_PASS"),
+        'HOST': env("DB_HOST"),
+        'PORT': '5432'
     }
 }
 
