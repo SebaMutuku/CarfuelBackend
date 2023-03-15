@@ -38,8 +38,7 @@ class LoginSerializer(serializers.Serializer, PageNumberPagination):
         )
         model = User
 
-    @staticmethod
-    def authenticate(request):
+    def authenticate(self, request):
         data = request.data
         uname = data['username']
         password = data['password']
@@ -48,10 +47,8 @@ class LoginSerializer(serializers.Serializer, PageNumberPagination):
         if user is not None and user.check_password(password):
             login(request, user)
             token, created = Token.objects.get_or_create(user=user)
-            role_id = 1 if user.is_superuser else 2 if user.is_staff else 3
             result["token"] = token.key
             result["username"] = user.username
-            result["role_id"] = role_id
             result["user_id"] = user.pk
             return result
 

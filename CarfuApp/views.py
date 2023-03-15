@@ -10,13 +10,13 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from CarfuApp.serializers import OrderSerializer, CarSerializer, AuthenticationSerializer, LoginSerializer
+from CarfuApp.serializers import OrderSerializer, CarSerializer, LoginSerializer, ReadUsers
 from . import models
 
 
 class Login(views.APIView):
     permission_classes = (AllowAny,)
-    serializer_class = AuthenticationSerializer.LoginSerializer
+    serializer_class = LoginSerializer
     parser_classes(JSONParser, )
 
     def post(self, request):
@@ -31,8 +31,7 @@ class Login(views.APIView):
     def get(self, request):
         username = request.data.get("username")
         user = User.objects.filter(username=username)
-        if (user.username is not None and user.username == username) or (
-                user.email is not None and user.email == username):
+        if (user.username is not None and user.username == username) or (user.email is not None and user.email == username):
             return Response({"message": "User found"}, status=status.HTTP_200_OK)
         return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -44,7 +43,7 @@ class Logout(views.APIView):
     permission_classes = ([IsAuthenticated])
     authentication_classes = ([BasicAuthentication, TokenAuthentication])
     parser_classes(JSONParser, )
-    serializer_class = AuthenticationSerializer.LoginSerializer
+    serializer_class = LoginSerializer
 
     def post(self, request):
         username = request.data["username"]
@@ -59,7 +58,7 @@ class GetSingleUser(views.APIView):
     permission_classes = ([IsAuthenticated, IsAdminUser])
     authentication_classes = ([BasicAuthentication, TokenAuthentication])
     parser_classes(JSONParser, )
-    serializer_class = AuthenticationSerializer.LoginSerializer
+    serializer_class = LoginSerializer
 
     def post(self, request):
         uname = request.data["username"]
@@ -103,7 +102,7 @@ class Register(views.APIView, PageNumberPagination):
 
     def get(self, request):
         user = User.objects.all().defer("password")
-        serializer = AuthenticationSerializer.ReadUsers(user, many=True)
+        serializer = ReadUsers(user, many=True)
         response = {"message": "success", "responsePayload": serializer.data}
         return Response(response, status=status.HTTP_200_OK)
 

@@ -48,10 +48,10 @@ ENC_SALT = env('ENC_SALT')
 REST_FRAMEWORK = {'DEFAULT_AUTHENTICATION_CLASSES':
     [
         'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication'
+        'rest_framework.authentication.BasicAuthentication'
     ],
-    'EXCEPTION_HANDLER': 'CarfuApp.utils.Exception.exceptionhandler'}
+    'EXCEPTION_HANDLER': 'CarfuApp.utils.Exception.exceptionhandler'
+}
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -134,16 +134,20 @@ WSGI_APPLICATION = 'CarfuelBackEnd.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': env('DB_NAME'),
-        'USER': env("DB_USER"),
-        'PASSWORD': env("DB_PASS"),
-        'HOST': env("DB_HOST"),
-        'PORT': '5432'
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': env("DB_NAME"),
+#         'USER': env("DB_USER"),
+#         'PASSWORD': env("DB_PASS"),
+#         'HOST': env("DB_HOST"),
+#         'PORT': '5432'
+#     }
+# }
+DATABASES = {'default': dj_database_url.config(
+    default=f'postgres://{env("DB_USER")}:{env("DB_PASS")}@{env("DB_HOST")}/{env("DB_NAME")}'
+            f'?options=project%3D{env("PROJECT_ID")}', ssl_require=True)}
+DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -192,4 +196,4 @@ STATIC_URL = '/staticfiles/'
 #  Add configuration for static files storage using whitenoise
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 prod_db = dj_database_url.config(conn_max_age=500)
-DATABASES['default'].update(prod_db)
+# DATABASES['default'].update(prod_db)
