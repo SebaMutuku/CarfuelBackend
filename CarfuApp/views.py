@@ -29,15 +29,18 @@ class Login(views.APIView):
         return Response({"user": None, "message": "Invalid Credentials"}, status.HTTP_401_UNAUTHORIZED)
 
     def get(self, request, pk, format=None):
-        user = User.objects.filter(pk=pk)
+        user = User.objects.filter(pk=pk).values('username', 'first_name', 'last_name', 'last_login', 'is_active',
+                                                 'date_joined', 'email', 'groups__permissions', 'is_superuser',
+                                                 'is_staff', 'user_permissions')
         if user:
             return Response({"message": "User found", "data": user}, status=status.HTTP_200_OK)
         return Response({"message": "User not found", "data": None}, status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, pk, format=None):
+        instance = User.objects.get(pk=pk)
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            user = serializer.update(validated_data=request.data, pk=pk)
+            user = serializer.update(instance, validated_data=request.data)
             return Response({"message": "User found", "data": user}, status=status.HTTP_200_OK)
         return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
