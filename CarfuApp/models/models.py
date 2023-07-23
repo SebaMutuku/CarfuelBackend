@@ -246,6 +246,7 @@ class Registeredvehicles(models.Model):
         managed = True
         db_table = 'registeredvehicles'
 
+
 class Cars(models.Model):
     id = models.AutoField(primary_key=True)
     make = models.CharField(blank=False, max_length=1000)
@@ -268,7 +269,7 @@ class Cars(models.Model):
         return self.make
 
 
-class AddUsersIntoDb(BaseUserManager):
+class UserModel(BaseUserManager):
     @staticmethod
     def create_user(username, password, **kwargs):
         user = User.objects.create(username=username,
@@ -288,7 +289,7 @@ class AddUsersIntoDb(BaseUserManager):
         user.save()
         return user
 
-    def create_normal_user(self, username=None, password=None, phonenumber=None):
+    def create_standard_user(self, username=None, password=None, phonenumber=None):
         user = self.create_user(username=username, password=password, email=phonenumber)
         user.is_admin = False
         user.is_superuser = False

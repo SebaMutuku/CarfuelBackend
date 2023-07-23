@@ -22,9 +22,10 @@ class Login(views.APIView):
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            user = serializer.authenticate(request)
-            if user:
-                return Response({"user": user, "message": "Successfully logged in"},
+            token = serializer.authenticate(request)
+            if token:
+                # Should generate token here
+                return Response({"token": token, "message": "Successfully logged in"},
                                 status=status.HTTP_200_OK)
         return Response({"user": None, "message": "Invalid Credentials"}, status.HTTP_401_UNAUTHORIZED)
 
@@ -37,7 +38,7 @@ class Login(views.APIView):
         return Response({"message": "User not found", "data": None}, status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, pk, format=None):
-        instance = User.objects.get(pk=pk)
+        instance = User.objects.get(pk=pk, format=format)
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             user = serializer.update(instance, validated_data=request.data)

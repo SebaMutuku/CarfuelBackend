@@ -5,12 +5,12 @@ from deprecated import deprecated
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.core import serializers as serialize
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from rest_framework import authentication, exceptions, serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.pagination import *
 
-from CarfuApp.models import AddUsersIntoDb, AuthUser
+from CarfuApp.models import UserModel, AuthUser
 from CarfuelBackEnd import settings
 
 
@@ -21,7 +21,7 @@ class LoginSerializer(serializers.ModelSerializer, PageNumberPagination):
         fields = ('username', 'email', 'is_staff', 'is_admin')
 
     def create(self, data):
-        user = AddUsersIntoDb().create_user(username=data['username'], password=data['password'], email=data['email'])
+        user = UserModel().create_user(username=data['username'], password=data['password'], email=data['email'])
         user.user_permissions.add(10, 11, 12, 13, 14, 15, 16)
         user.save()
         # user_dict = list(user)
@@ -70,7 +70,7 @@ class LoginSerializer(serializers.ModelSerializer, PageNumberPagination):
             result["token"] = token.key
             result["username"] = user.username
             result["user_id"] = user.pk
-            return result
+            return token
 
     @staticmethod
     def logout(request):
@@ -155,7 +155,3 @@ class DecodeToken:
             except AuthUser.DoesNotExist:
                 loggedinuser = None
         return loggedinuser
-
-    @classmethod
-    def test_class(cls, name):
-        return cls.test_class(name)
