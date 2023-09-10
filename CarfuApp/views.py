@@ -1,5 +1,8 @@
+from datetime import datetime
+
 from django.contrib.auth.models import User
 from django.db.models import Q
+from django.http import HttpResponse
 from rest_framework import status, views
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
 from rest_framework.decorators import parser_classes
@@ -12,6 +15,19 @@ from rest_framework.views import APIView
 
 from CarfuApp.serializers import OrderSerializer, CarSerializer, LoginSerializer, ReadUsers
 from . import models
+
+
+def index(request):
+    now = datetime.now()
+    html = f'''
+    <html>
+        <body>
+            <h1>Welcome to Carfuel. If you are seeing this, your app works perfectly!</h1>
+            <p>Deployment completed as at {now}.</p>
+        </body>
+    </html>
+    '''
+    return HttpResponse(html)
 
 
 class Login(views.APIView):

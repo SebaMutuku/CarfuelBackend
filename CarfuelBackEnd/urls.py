@@ -16,7 +16,8 @@ Including another URLconf
 
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import re_path,path
+from django.urls import path, include
+from django.urls import re_path
 
 from CarfuApp import views
 from CarfuelBackEnd import settings
@@ -24,6 +25,7 @@ from CarfuelBackEnd import settings
 app_name = 'CarfuApp'
 
 urlpatterns = [
+    path('', include('CarfuApp.urls')),
     re_path(r'^admin/', admin.site.urls),
     re_path(r'^api/users/login', views.Login.as_view(), name='Login'),
     re_path('api/users/<int:pk>', views.Login.as_view()),
