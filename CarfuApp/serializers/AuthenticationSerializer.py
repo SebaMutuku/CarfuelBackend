@@ -7,7 +7,6 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.pagination import *
 
-from CarfuApp.interfaces.LoginInterface import LoginInterface
 from CarfuApp.models import UserModel
 
 
@@ -22,7 +21,7 @@ class LoginSerializer(serializers.ModelSerializer, PageNumberPagination):
         user.user_permissions.add(10, 11, 12, 13, 14, 15, 16)
         user.save()
 
-        return user.values()
+        return user
 
     def list_users(self):
         pass
