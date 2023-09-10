@@ -73,7 +73,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'CarfuelBackEnd.urls'
 CORS_ORIGIN_ALLOW_ALL = True
-ALLOWED_HOSTS = ['.vercel.app']
+ALLOWED_HOSTS = ['.vercel.app','localhost']
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_METHODS = [
     "DELETE",

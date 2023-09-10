@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class LoginInterface(ABC):
+class BaseLogin(type):
     @abstractmethod
     def create(self, data): pass
 

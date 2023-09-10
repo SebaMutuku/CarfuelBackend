@@ -6,6 +6,7 @@ from django.core import serializers as serialize
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.pagination import *
+from django.core import serializers as core_serializers
 
 from CarfuApp.models import UserModel
 
@@ -20,8 +21,16 @@ class LoginSerializer(serializers.ModelSerializer, PageNumberPagination):
         user = UserModel().create_user(username=data['username'], password=data['password'], email=data['email'])
         user.user_permissions.add(10, 11, 12, 13, 14, 15, 16)
         user.save()
-
-        return user
+        user_data = dict()
+        user_data["user_id"] = user.pk
+        user_data["username"] = user.username
+        user_data["email"] = user.email
+        user_data["first_name"] = user.first_name
+        user_data["last_name"] = user.last_name
+        user_data["is_staff"] = user.is_staff
+        user_data["is_active"] = user.is_active
+        user_data["date_joined"] = user.date_joined
+        return user_data
 
     def list_users(self):
         pass
@@ -49,9 +58,9 @@ class LoginSerializer(serializers.ModelSerializer, PageNumberPagination):
         if user is not None and user.check_password(password):
             login(request, user)
             token, created = Token.objects.get_or_create(user=user)
+            result["user_id"] = user.pk
             result["token"] = token.key
             result["username"] = user.username
-            result["user_id"] = user.pk
             return token
 
     @staticmethod
