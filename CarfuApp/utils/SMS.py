@@ -1,14 +1,16 @@
-from CarfuelBackEnd import settings
 import json
 import random
+
 import requests
+
+from CarfuelBackEnd import settings
 
 
 class SendSMS(object):
     def sendMessageBirdSMS(data):
         otp = str(random.randint(1000, 9999))
         smsBody = "<#Your OTP is " + otp
-        print(otp,data['phonenumber'] )
+        print(otp, data['phonenumber'])
         body = {
             'originator': 'CARFUEL',
             'recipients': data['phonenumber'],

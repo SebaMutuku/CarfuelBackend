@@ -1,6 +1,6 @@
 import json
 
-import jwt
+
 from deprecated import deprecated
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -114,44 +114,3 @@ class ReadUsers(serializers.ModelSerializer):
             return users
         else:
             return None
-
-
-@deprecated(reason="Use Django Authentication instead")
-class DecodeToken:
-    @staticmethod
-    def decode_token(request):
-        headers = authentication.get_authorization_header(request).decode("ascii").split()
-        if not headers or headers[0].lower() != 'token':
-            loggedinuser = None
-        elif len(headers) == 1:
-            msg = 'Invalid token header. No credentials provided.'
-            raise exceptions.AuthenticationFailed(msg)
-        elif len(headers) > 2:
-            msg = 'Invalid token header'
-            raise exceptions.AuthenticationFailed(msg)
-        else:
-            try:
-                token = headers[1]
-                if token is None:
-                    msg = 'Invalid token header'
-                    raise exceptions.AuthenticationFailed(msg)
-                else:
-                    user_data = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
-                    user_id = user_data['id']
-                    username = user_data['subject']
-                    role = user_data['roleId']
-                    db_user = User.objects.get(username=username)
-                    db_token = db_user.token[1:].replace("\'", "")
-                    passed_token = str(token)[2:].replace("\'", "")
-                    if db_token == passed_token:
-                        loggedinuser = dict()
-                        loggedinuser['loggedinuser'] = loggedinuser
-                        loggedinuser['roleId'] = role
-                        loggedinuser['token'] = token
-                    else:
-                        loggedinuser = None
-            except jwt.ExpiredSignatureError or jwt.DecodeError or jwt.InvalidTokenError:
-                return HttpResponse({'Error': "Token is invalid"}, status="403")
-            except AuthUser.DoesNotExist:
-                loggedinuser = None
-        return loggedinuser

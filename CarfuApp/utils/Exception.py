@@ -1,9 +1,9 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from rest_framework import status
 from rest_framework.exceptions import ValidationError, APIException
 from rest_framework.response import Response
 from rest_framework.views import exception_handler
-from django.core.exceptions import ObjectDoesNotExist
 
 
 def exceptionhandler(exception, context):

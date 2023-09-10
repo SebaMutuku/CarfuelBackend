@@ -1,7 +1,6 @@
 from django.contrib import admin
 
-from . import models
-from .models import  Orders, Registeredvehicles
+from .models import Orders, Registeredvehicles
 
 
 # @admin.register(Roles)
