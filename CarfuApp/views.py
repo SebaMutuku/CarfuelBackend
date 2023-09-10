@@ -114,8 +114,8 @@ class Register(views.APIView, PageNumberPagination):
             user = serializer.create(request.data)
             if user:
                 return Response(
-                    {"user": user, "message": "Successfully created user", "responseCode": status.HTTP_202_ACCEPTED},
-                    status=status.HTTP_202_ACCEPTED)
+                    {"user": user, "message": "Successfully created user", "responseCode": status.HTTP_201_CREATED},
+                    status=status.HTTP_201_CREATED)
             else:
                 return Response(
                     {"message": user, "responseCode": status.HTTP_208_ALREADY_REPORTED},
