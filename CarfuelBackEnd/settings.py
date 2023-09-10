@@ -12,12 +12,6 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 
-import dj_database_url
-import environ
-
-env = environ.Env()
-environ.Env.read_env()
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 from django.core.checks import templates
 
@@ -27,22 +21,22 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('SECRET_KEY')
-TWILIO_ACCOUNT_SID = env('TWILIO_ACCOUNT_SID')
-TWILIO_ACCOUNT_TOKEN = env('TWILIO_ACCOUNT_TOKEN')
-TWILIO_PHONE_NUMBER = env('TWILIO_PHONE_NUMBER')
-MESSAGE_BIRD_ACCESS_KEY = env('MESSAGE_BIRD_ACCESS_KEY')
-MESSAGE_BIRD_URL = env('MESSAGE_BIRD_URL')
+SECRET_KEY = os.environ.get('SECRET_KEY')
+TWILIO_ACCOUNT_SID = os.environ.get('TWILIO_ACCOUNT_SID')
+TWILIO_ACCOUNT_TOKEN = os.environ.get('TWILIO_ACCOUNT_TOKEN')
+TWILIO_PHONE_NUMBER = os.environ.get('TWILIO_PHONE_NUMBER')
+MESSAGE_BIRD_ACCESS_KEY = os.environ.get('MESSAGE_BIRD_ACCESS_KEY')
+MESSAGE_BIRD_URL = os.environ.get('MESSAGE_BIRD_URL')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = False
-DEBUG = env("DEBUG")
+DEBUG = False
 
 # ALLOWED_HOSTS = ['carfueldjango.herokuapp.com', 'localhost:3000', ]
 # Encryption
 KEY_LENGTH = 32
-ENC_SECRET_KEY = env('ENC_SECRET_KEY')
-ENC_SALT = env('ENC_SALT')
+ENC_SECRET_KEY = os.environ.get('ENC_SECRET_KEY')
+ENC_SALT = os.environ.get('ENC_SALT')
 
 # Application definition
 REST_FRAMEWORK = {'DEFAULT_AUTHENTICATION_CLASSES':
@@ -105,7 +99,7 @@ CORS_ALLOW_HEADERS = [
 ]
 CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
 REST_USE_JWT = True
-ENCRYPTION_KEY = env('ENCRYPTION_KEY')
+ENCRYPTION_KEY = os.environ.get('ENCRYPTION_KEY')
 # JWT_AUTH = {
 #     'JWT_VERIFY': True,
 #     'JWT_VERIFY_EXPIRATION': True,
@@ -134,19 +128,17 @@ WSGI_APPLICATION = 'CarfuelBackEnd.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': env("DB_NAME"),
-#         'USER': env("DB_USER"),
-#         'PASSWORD': env("DB_PASS"),
-#         'HOST': env("DB_HOST"),
-#         'PORT': '5432'
-#     }
-# }
-DATABASES = {'default': dj_database_url.config(
-    default=f'postgres://{env("DB_USER")}:{env("DB_PASS")}@{env("DB_HOST")}/{env("DB_NAME")}'
-            f'?options=project%3D{env("PROJECT_ID")}', ssl_require=True)}
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.environ.get("DATABASE"),
+        'USER': os.environ.get("USER"),
+        'PASSWORD': os.environ.get("PASSWORD"),
+        'HOST': os.environ.get("HOST"),
+        'PORT': '5432'
+    }
+}
+
 DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql'
 
 # Password validation
@@ -196,5 +188,4 @@ STATIC_URL = '/staticfiles/'
 # Extra lookup directories for collectstatic to find static files
 #  Add configuration for static files storage using whitenoise
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-prod_db = dj_database_url.config(conn_max_age=500)
 # DATABASES['default'].update(prod_db)
