@@ -82,7 +82,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'CarfuelBackEnd.urls'
 CORS_ORIGIN_ALLOW_ALL = True
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['.vercel.app']
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_METHODS = [
     "DELETE",
@@ -185,7 +185,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 PROJECT_ROOT = os.path.join(os.path.abspath(__file__))
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'images')
 MEDIA_URL = 'static/'
 PUBLIC_KEY_NAME = STATIC_ROOT + '/keys/publicKey.pem'
