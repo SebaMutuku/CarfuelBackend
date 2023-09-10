@@ -11,7 +11,7 @@ from CarfuApp.interfaces.LoginInterface import LoginInterface
 from CarfuApp.models import UserModel
 
 
-class LoginSerializer(serializers.ModelSerializer, PageNumberPagination, LoginInterface):
+class LoginSerializer(serializers.ModelSerializer, PageNumberPagination):
     search_fields = ['username', 'email']
 
     class Meta:
