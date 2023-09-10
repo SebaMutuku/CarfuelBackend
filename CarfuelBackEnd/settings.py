@@ -30,7 +30,7 @@ MESSAGE_BIRD_URL = os.environ.get('MESSAGE_BIRD_URL')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = False
-DEBUG = False
+DEBUG = True
 
 # ALLOWED_HOSTS = ['carfueldjango.herokuapp.com', 'localhost:3000', ]
 # Encryption
