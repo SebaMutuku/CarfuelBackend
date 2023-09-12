@@ -73,7 +73,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'CarfuelBackEnd.urls'
 CORS_ORIGIN_ALLOW_ALL = True
-ALLOWED_HOSTS = ['.vercel.app','localhost']
+ALLOWED_HOSTS = ['.vercel.app', 'localhost']
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_METHODS = [
     "DELETE",
@@ -137,7 +137,14 @@ DATABASES = {
 }
 
 DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql'
-
+#
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': 'mydatabase', # This is where you put the name of the db file.
+#                  # If one doesn't exist, it will be created at migration time.
+#     }
+# }
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
@@ -173,8 +180,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 PROJECT_ROOT = os.path.join(os.path.abspath(__file__))
-STATICFILES_DIRS = os.path.join(BASE_DIR, 'static'),
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'images')
 MEDIA_URL = 'static/'
 PUBLIC_KEY_NAME = STATIC_ROOT + '/keys/publicKey.pem'

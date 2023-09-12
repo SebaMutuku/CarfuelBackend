@@ -1,7 +1,8 @@
 import json
 
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.models import User
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core import serializers as serialize
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
@@ -10,11 +11,25 @@ from rest_framework.pagination import PageNumberPagination
 from CarfuApp.models import UserModel
 
 
-class LoginSerializer(serializers.ModelSerializer, PageNumberPagination):
+class LoginSerializer(serializers.Serializer, PageNumberPagination):
     search_fields = ['username', 'email']
+    model = get_user_model()
 
     class Meta:
-        fields = ('username', 'email', 'is_staff', 'is_admin')
+        fields = ['username', 'email', 'is_staff', 'is_admin']
+        extra_kwargs = {'username': {'validators': [UnicodeUsernameValidator()], }}
+
+    @staticmethod
+    def authenticate(request):
+        data = request.data
+        uname = data['username']
+        password = data['password']
+        user = authenticate(request, username=uname, password=password)
+        if user is not None:
+            login(request, user)
+            token, created = Token.objects.get_or_create(user=user)
+            return token.key
+        return None
 
     def create(self, data):
         user = UserModel().create_user(username=data['username'], password=data['password'], email=data['email'])
@@ -47,20 +62,6 @@ class LoginSerializer(serializers.ModelSerializer, PageNumberPagination):
             'password'
         )
         model = User
-
-    def authenticate(self, request):
-        data = request.data
-        uname = data['username']
-        password = data['password']
-        result = dict()
-        user = authenticate(username=uname, password=password)
-        if user is not None and user.check_password(password):
-            login(request, user)
-            token, created = Token.objects.get_or_create(user=user)
-            result["user_id"] = user.pk
-            result["token"] = token.key
-            result["username"] = user.username
-            return token
 
     @staticmethod
     def logout(request):
