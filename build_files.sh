@@ -1,9 +1,9 @@
 #!/bin/bash
 
-echo "Building the project..."
+echo "***** Building the project *****"
 python3 -m pip install -r requirements.txt
-echo "Make Migration..."
+echo "***** Make Migration *****"
 python3 manage.py makemigrations --noinput
 python3 manage.py migrate --noinput
-echo "Collect Static..."
+echo "***** Collecting Static *****"
 python3 manage.py collectstatic --noinput --clear
