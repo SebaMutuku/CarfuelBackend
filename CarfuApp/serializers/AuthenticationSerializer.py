@@ -5,8 +5,7 @@ from django.contrib.auth.models import User
 from django.core import serializers as serialize
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
-from rest_framework.pagination import *
-from django.core import serializers as core_serializers
+from rest_framework.pagination import PageNumberPagination
 
 from CarfuApp.models import UserModel
 
