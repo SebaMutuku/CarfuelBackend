@@ -26,6 +26,5 @@
       "src": "/(.*)",
       "dest": "CarfuelBackEnd/wsgi.py"
     }
-  ],
-  "outputDirectory": "staticfiles_build"
+  ]
 }
