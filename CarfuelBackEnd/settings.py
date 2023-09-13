@@ -98,13 +98,6 @@ CORS_ALLOW_HEADERS = [
 CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
 REST_USE_JWT = True
 ENCRYPTION_KEY = os.environ.get('ENCRYPTION_KEY')
-# JWT_AUTH = {
-#     'JWT_VERIFY': True,
-#     'JWT_VERIFY_EXPIRATION': True,
-#     'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=3000),
-#     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
-#
-# },
 
 TEMPLATES = [
     {
@@ -182,7 +175,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 PROJECT_ROOT = os.path.join(os.path.abspath(__file__))
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
-# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'images')
 MEDIA_URL = 'static/'

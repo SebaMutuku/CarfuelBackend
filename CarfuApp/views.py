@@ -37,7 +37,7 @@ class Login(views.APIView):
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data, context={'request': request})
-        if serializer.is_valid(raise_exception=True):
+        if serializer.is_valid(raise_exception=False):
             token = serializer.data.get("token", None)
             if token:
                 # Should generate token here
