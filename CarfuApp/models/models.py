@@ -271,17 +271,17 @@ class Cars(models.Model):
 
 class UserModel(BaseUserManager):
     @staticmethod
-    def create_user(username, password, **kwargs):
+    def create_user(username, password, email=None):
         user = User.objects.create(username=username,
                                    is_superuser=False,
                                    is_staff=False,
                                    is_active=True,
-                                   email=kwargs.get('email'))
+                                   email=email)
         user.set_password(password)
         return user
 
-    def create_superuser(self, password=None, username=None, phonenumber=None):
-        user = self.create_user(username=username, password=password, email=phonenumber, is_active=True)
+    def create_superuser(self, password=None, username=None, email=None):
+        user = self.create_user(username=username, password=password, email=email)
         user.is_staff = False
         user.is_admin = True
         user.is_superuser = True
@@ -289,16 +289,16 @@ class UserModel(BaseUserManager):
         user.save()
         return user
 
-    def create_standard_user(self, username=None, password=None, phonenumber=None):
-        user = self.create_user(username=username, password=password, email=phonenumber)
+    def create_standard_user(self, username=None, password=None, email=None):
+        user = self.create_user(username=username, password=password, email=email)
         user.is_admin = False
         user.is_superuser = False
         user.is_staff = False
         user.save()
         return user
 
-    def create_agent(self, username=None, password=None, phonenumber=None):
-        user = self.create_user(username=username, password=password, email=phonenumber)
+    def create_agent(self, username=None, password=None, email=None):
+        user = self.create_user(username=username, password=password, email=email)
         user.is_staff = True
         user.is_admin = False
         user.save()

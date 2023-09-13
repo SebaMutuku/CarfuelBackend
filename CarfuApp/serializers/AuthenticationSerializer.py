@@ -2,7 +2,6 @@ import json
 
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.models import User
-from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core import serializers as serialize
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
@@ -13,46 +12,20 @@ from CarfuApp.models import UserModel
 
 class LoginSerializer(serializers.Serializer, PageNumberPagination):
     search_fields = ['username', 'email']
-    model = get_user_model()
+    password = serializers.CharField(max_length=128, write_only=True)
+    username = serializers.CharField(max_length=255, write_only=True)
+    token = serializers.CharField(max_length=255, read_only=True)
 
-    class Meta:
-        fields = ['username', 'email', 'is_staff', 'is_admin']
-        extra_kwargs = {'username': {'validators': [UnicodeUsernameValidator()], }}
-
-    @staticmethod
-    def authenticate(request):
-        data = request.data
-        uname = data['username']
-        password = data['password']
-        user = authenticate(request, username=uname, password=password)
+    def validate(self, data):
+        user = authenticate(username=data.get("username"), password=data.get("password", None))
         if user is not None:
-            login(request, user)
+            login(self.context['request'], user=user)
             token, created = Token.objects.get_or_create(user=user)
-            return token.key
-        return None
-
-    def create(self, data):
-        user = UserModel().create_user(username=data['username'], password=data['password'], email=data['email'])
-        user.user_permissions.add(10, 11, 12, 13, 14, 15, 16)
-        user.save()
-        user_data = dict()
-        user_data["user_id"] = user.pk
-        user_data["username"] = user.username
-        user_data["email"] = user.email
-        user_data["first_name"] = user.first_name
-        user_data["last_name"] = user.last_name
-        user_data["is_staff"] = user.is_staff
-        user_data["is_active"] = user.is_active
-        user_data["date_joined"] = user.date_joined
-        return user_data
+            return {'token': token or None}
+        return {"token": None}
 
     def list_users(self):
         pass
-
-    def update(self, instance, validated_data):
-        instance.save()
-        super(LoginSerializer, self).update(instance, validated_data)
-        return json.loads(serialize.serialize('json', [instance])), None
 
     page_size = 30
 
@@ -70,13 +43,21 @@ class LoginSerializer(serializers.Serializer, PageNumberPagination):
 
 
 class RegisterSerializer(serializers.ModelSerializer, PageNumberPagination):
+    password = serializers.CharField(max_length=128, min_length=8, write_only=True, )
+
     class Meta:
         model = User
-        fields = (
-            'email',
-            'password',
-            'username',
-        )
+        fields = ('email', 'password', 'username',)
+
+    def create(self, validated_data):
+        return UserModel().create_standard_user(username=validated_data['username'],
+                                                password=validated_data['password'],
+                                                email=validated_data['email'])
+
+    def update(self, instance, validated_data):
+        instance.save()
+        super(RegisterSerializer, self).update(instance, validated_data)
+        return json.loads(serialize.serialize('json', [instance])), None
 
 
 class ReadUsers(serializers.ModelSerializer):

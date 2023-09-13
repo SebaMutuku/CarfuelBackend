@@ -1,4 +1,3 @@
-import json
 from datetime import datetime
 
 from django.contrib.auth.models import User
@@ -14,7 +13,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from CarfuApp.serializers import OrderSerializer, CarSerializer, LoginSerializer, ReadUsers
+from CarfuApp.serializers import OrderSerializer, CarSerializer, LoginSerializer, ReadUsers, RegisterSerializer
 from . import models
 
 
@@ -37,14 +36,14 @@ class Login(views.APIView):
     parser_classes(JSONParser, )
 
     def post(self, request):
-        serializer = self.serializer_class(data=request.data)
+        serializer = self.serializer_class(data=request.data, context={'request': request})
         if serializer.is_valid(raise_exception=True):
-            token = serializer.authenticate(request)
+            token = serializer.data.get("token", None)
             if token:
                 # Should generate token here
                 return Response({"token": token, "message": "Successfully logged in"},
                                 status=status.HTTP_200_OK)
-        return Response({"user": None, "message": "Invalid Credentials"}, status.HTTP_401_UNAUTHORIZED)
+        return Response({"token": None, "message": "Invalid Credentials"}, status.HTTP_401_UNAUTHORIZED)
 
     def get(self, request, pk, format=None):
         user = User.objects.filter(pk=pk).values('username', 'first_name', 'last_name', 'last_login', 'is_active',
@@ -101,7 +100,7 @@ class Register(views.APIView, PageNumberPagination):
     permission_classes = (AllowAny,)
     authentication_classes = ([TokenAuthentication, BasicAuthentication])
     querySet = User.objects.all()
-    serializer_class = LoginSerializer
+    serializer_class = RegisterSerializer
     parser_classes(JSONParser, )
     pagination_class = PageNumberPagination
     page_size = 1000
@@ -110,8 +109,10 @@ class Register(views.APIView, PageNumberPagination):
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid(raise_exception=False):
-            user = serializer.create(request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            user = serializer.data
+            print(serializer.data.values())
             if user:
                 return Response(
                     {"user": user, "message": "Successfully created user", "responseCode": status.HTTP_201_CREATED},
