@@ -49,3 +49,6 @@ Setting DISABLE_COLLECTSTATIC and restarting
 * brew install openssl
 * export LDFLAGS="-L/usr/local/opt/openssl/lib"
 * export CPPFLAGS="-I/usr/local/opt/openssl/include"
+
+### Working with the api
+To access single object e.g the url format should look like {Domain}/api/users/get?id=3

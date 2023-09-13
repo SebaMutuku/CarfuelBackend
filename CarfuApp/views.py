@@ -45,7 +45,7 @@ class Login(views.APIView):
                                 status=status.HTTP_200_OK)
         return Response({"token": None, "message": "Invalid Credentials"}, status.HTTP_401_UNAUTHORIZED)
 
-    def get(self, request, pk, format=None):
+    def get(self, request, pk):
         user = User.objects.filter(pk=pk).values('username', 'first_name', 'last_name', 'last_login', 'is_active',
                                                  'date_joined', 'email', 'groups__permissions', 'is_superuser',
                                                  'is_staff', 'user_permissions')
@@ -77,25 +77,6 @@ class Logout(views.APIView):
         return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
-class GetSingleUser(views.APIView):
-    permission_classes = ([IsAuthenticated, IsAdminUser])
-    authentication_classes = ([BasicAuthentication, TokenAuthentication])
-    parser_classes(JSONParser, )
-    serializer_class = LoginSerializer
-
-    def post(self, request):
-        uname = request.data["username"]
-        user = User.objects.get(Q(username=uname) | Q(email=uname))
-        if (user.username is not None and user.username == uname) or (
-                user.email is not None and user.email == uname):
-            return Response({"message": "User found", "status": status.HTTP_200_OK}, status=status.HTTP_200_OK)
-        return Response({"message": "User not found", "status": status.HTTP_404_NOT_FOUND},
-                        status=status.HTTP_404_NOT_FOUND)
-
-    def get(self):
-        pass
-
-
 class Register(views.APIView, PageNumberPagination):
     permission_classes = (AllowAny,)
     authentication_classes = ([TokenAuthentication, BasicAuthentication])
@@ -112,7 +93,6 @@ class Register(views.APIView, PageNumberPagination):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             user = serializer.data
-            print(serializer.data.values())
             if user:
                 return Response(
                     {"user": user, "message": "Successfully created user", "responseCode": status.HTTP_201_CREATED},
@@ -126,10 +106,20 @@ class Register(views.APIView, PageNumberPagination):
                         status.HTTP_208_ALREADY_REPORTED)
 
     def get(self, request):
-        user = User.objects.all().defer("password")
-        serializer = ReadUsers(user, many=True)
-        response = {"message": "success", "responsePayload": serializer.data}
-        return Response(response, status=status.HTTP_200_OK)
+        pk = request.query_params.get("id", None)
+        if pk is not None:
+            user = self.serializer_class.get_single_user(pk)
+            if user is not None:
+                return Response({"data": user, "message": "success", "responseCode": status.HTTP_302_FOUND},
+                                status.HTTP_302_FOUND)
+            return Response({"data": None, "message": "User not found", "responseCode": status.HTTP_404_NOT_FOUND},
+                            status.HTTP_404_NOT_FOUND)
+        users = self.serializer_class.get_all_users()
+        if users is not None:
+            return Response({"data": users, "message": "success", "responseCode": status.HTTP_302_FOUND},
+                            status.HTTP_302_FOUND)
+        return Response({"data": None, "message": "No data available", "responseCode": status.HTTP_204_NO_CONTENT},
+                        status.HTTP_404_NOT_FOUND)
 
 
 class Order(APIView):

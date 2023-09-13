@@ -1,8 +1,12 @@
 import json
+from typing import Tuple, Union, Any, Optional
 
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.models import User
 from django.core import serializers as serialize
+from django.core.management import call_command
+from django.core import serializers as core_serializer
+from django.http import JsonResponse
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.pagination import PageNumberPagination
@@ -23,11 +27,6 @@ class LoginSerializer(serializers.Serializer, PageNumberPagination):
             token, created = Token.objects.get_or_create(user=user)
             return {'token': token or None}
         return {"token": None}
-
-    def list_users(self):
-        pass
-
-    page_size = 30
 
     class Meta:
         fields = (
@@ -58,6 +57,36 @@ class RegisterSerializer(serializers.ModelSerializer, PageNumberPagination):
         instance.save()
         super(RegisterSerializer, self).update(instance, validated_data)
         return json.loads(serialize.serialize('json', [instance])), None
+
+    @staticmethod
+    def get_single_user(pk: int) -> Optional[JsonResponse]:
+        return User.objects.filter(pk=pk).values('username', 'first_name', 'last_name', 'last_login', 'is_active',
+                                                 'date_joined', 'email', 'groups__permissions', 'is_superuser',
+                                                 'is_staff', 'user_permissions') or None
+
+    @staticmethod
+    def get_all_users() -> tuple[list[User], None]:
+        return User.objects.all().order_by("date_joined").values('username', 'first_name',
+                                                                 'last_name', 'last_login',
+                                                                 'is_active',
+                                                                 'date_joined', 'email',
+                                                                 'groups__permissions',
+                                                                 'is_superuser',
+                                                                 'is_staff', 'user_permissions'), None
+
+    def create_super_user(self, validated_data):
+        try:
+            password = validated_data['password']
+            username = validated_data['username']
+            email = validated_data['email']
+            call_command('createsuperuser', interactive=False, username=username, email=email)
+            super_user = User.objects.get(username=username)
+            super_user.set_password(password)
+            super_user.save()
+            return super_user
+        except Exception as e:
+            print(e)
+            return None
 
 
 class ReadUsers(serializers.ModelSerializer):

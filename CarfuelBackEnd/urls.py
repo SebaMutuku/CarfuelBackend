@@ -28,11 +28,9 @@ urlpatterns = [
     path('', include('CarfuApp.urls')),
     re_path(r'^admin/', admin.site.urls),
     re_path(r'^api/users/login', views.Login.as_view(), name='Login'),
-    re_path('api/users/<int:pk>', views.Login.as_view()),
     re_path('api/users/register', views.Register.as_view(), name='Register'),
-    path('api/users/<int:pk>', views.Login.as_view()),
+    re_path('api/users/get', views.Register.as_view(), name='get_all_users'),
     re_path('api/users/logout', views.Logout.as_view(), name='logout'),
-    re_path('api/users/getUser', views.GetSingleUser.as_view(), name='Viewuser'),
     re_path('api/orders/createOrder', views.Order.as_view(), name='CreateOrder'),
     re_path('api/cars/allcars', views.CarsView.as_view(), name='cars'),
     re_path('api/cars/carbrands', views.CarBrandsView.as_view(), name='carbrands')

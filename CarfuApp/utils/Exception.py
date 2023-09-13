@@ -13,17 +13,17 @@ def exceptionhandler(exception, context):
     if response is not None:
         return response
     if isinstance(exception, ValidationError):
-        return Response({'message': 'Validation error occurred', "status": status.HTTP_400_BAD_REQUEST},
+        return Response({'message': exception.args, "status": status.HTTP_500_INTERNAL_SERVER_ERROR},
                         status=status.HTTP_400_BAD_REQUEST)
     if isinstance(exception, APIException):
-        return Response({'message': 'API exception occurred', "status": status.HTTP_400_BAD_REQUEST},
+        return Response({'message': exception.args, "status": status.HTTP_500_INTERNAL_SERVER_ERROR},
                         status=status.HTTP_400_BAD_REQUEST)
     if isinstance(exception, IntegrityError):
-        return Response({'message': 'Integrity error occurred', "status": status.HTTP_400_BAD_REQUEST},
+        return Response({'message': exception.args, "status": status.HTTP_500_INTERNAL_SERVER_ERROR},
                         status=status.HTTP_400_BAD_REQUEST)
     if isinstance(exception, ObjectDoesNotExist):
-        return Response({'message': 'Item you are looking for doesnt exist', "status": status.HTTP_404_NOT_FOUND},
+        return Response({'message': exception.args, "status": status.HTTP_404_NOT_FOUND},
                         status=status.HTTP_400_BAD_REQUEST)
 
-    return Response({'message': 'An error occurred while processing your request.',
+    return Response({'message': f'An error occurred while processing your request. {exception.args}',
                      "status": status.HTTP_500_INTERNAL_SERVER_ERROR}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
