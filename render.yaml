@@ -1,0 +1,20 @@
+databases:
+  - name: carfueldb
+    databaseName: carfueldb
+    user: carfueluser
+
+services:
+  - type: django-backend
+    name:  django-backend
+    runtime: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn mysite.wsgi:application"
+    envVars:
+      - key: postgres://carfueluser:7heIcjn8CfBEK6tthBXysDZCz9rT6WMR@dpg-clrm75946foc739fnco0-a/carfueldb
+        fromDatabase:
+          name: carfueldb
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: 4
