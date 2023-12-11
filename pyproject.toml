@@ -1,4 +1,4 @@
-[tool.poetry.dependencies]
+[tool.poetry]
 name = "carfuelbackend"
 version = "0.1.0"
 description = "Carfuel Backend"
