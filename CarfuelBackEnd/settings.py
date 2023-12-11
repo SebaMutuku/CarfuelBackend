@@ -121,14 +121,18 @@ WSGI_APPLICATION = 'CarfuelBackEnd.wsgi.application'
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ.get("DATABASE"),
-        'USER': os.environ.get("USER"),
-        'PASSWORD': os.environ.get("PASSWORD"),
-        'HOST': os.environ.get("HOST"),
-        'PORT': '5432'
-    }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     'NAME': os.environ.get("DATABASE"),
+    #     'USER': os.environ.get("USER"),
+    #     'PASSWORD': os.environ.get("PASSWORD"),
+    #     'HOST': os.environ.get("HOST"),
+    #     'PORT': '5432'
+    # }
+    'default': dj_database_url.config(
+        default='postgres://carfueluser:7heIcjn8CfBEK6tthBXysDZCz9rT6WMR@dpg-clrm75946foc739fnco0-a/carfueldb',
+        conn_max_age=600
+    )
 }
 
 DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql'
