@@ -4,8 +4,8 @@ databases:
     user: carfueluser
 
 services:
-  - type: djangobackend
-    name:  djangobackend
+  - type: web
+    name:  django-backend
     runtime: python
     buildCommand: "./build.sh"
     startCommand: "gunicorn mysite.wsgi:application"
