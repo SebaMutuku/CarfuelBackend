@@ -29,7 +29,7 @@ class LoginSerializer(serializers.Serializer, PageNumberPagination):
                 'username': user.username
             }
             return {"data", data}
-        return {"token": None}
+        return {"data": None}
 
     class Meta:
         fields = (
