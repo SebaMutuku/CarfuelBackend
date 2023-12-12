@@ -1,4 +1,3 @@
-import json
 from datetime import datetime
 
 from django import get_version
@@ -42,9 +41,10 @@ class Login(views.APIView):
         serializer = self.serializer_class(data=request.data, context={'request': request})
         if serializer.is_valid(raise_exception=False):
             data = serializer.data.get("data", None)
+            print(f'Received data: {data}')
             if data:
                 # Should generate token here
-                return Response({"payload": json.dumps(data), "message": "Successfully logged in"},
+                return Response({"payload": data, "message": "Successfully logged in"},
                                 status=status.HTTP_200_OK)
         return Response({"payload": None, "message": "Invalid Credentials"}, status.HTTP_401_UNAUTHORIZED)
 
