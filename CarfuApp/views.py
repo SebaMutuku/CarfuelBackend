@@ -40,20 +40,20 @@ class Login(views.APIView):
     def post(self, request):
         serializer = self.serializer_class(data=request.data, context={'request': request})
         if serializer.is_valid(raise_exception=False):
-            token = serializer.data.get("token", None)
-            if token:
+            data = serializer.data.get("data", None)
+            if data:
                 # Should generate token here
-                return Response({"token": token, "message": "Successfully logged in"},
+                return Response({"payload": data, "message": "Successfully logged in"},
                                 status=status.HTTP_200_OK)
-        return Response({"token": None, "message": "Invalid Credentials"}, status.HTTP_401_UNAUTHORIZED)
+        return Response({"payload": None, "message": "Invalid Credentials"}, status.HTTP_401_UNAUTHORIZED)
 
     def get(self, request, pk):
         user = User.objects.filter(pk=pk).values('username', 'first_name', 'last_name', 'last_login', 'is_active',
                                                  'date_joined', 'email', 'groups__permissions', 'is_superuser',
                                                  'is_staff', 'user_permissions')
         if user:
-            return Response({"message": "User found", "data": user}, status=status.HTTP_200_OK)
-        return Response({"message": "User not found", "data": None}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"message": "User found", "payload": user}, status=status.HTTP_200_OK)
+        return Response({"message": "User not found", "payload": None}, status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, pk, format=None):
         instance = User.objects.get(pk=pk, format=format)

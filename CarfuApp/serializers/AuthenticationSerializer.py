@@ -1,11 +1,10 @@
 import json
-from typing import Tuple, Union, Any, Optional
+from typing import Optional
 
-from django.contrib.auth import authenticate, login, logout, get_user_model
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.core import serializers as serialize
 from django.core.management import call_command
-from django.core import serializers as core_serializer
 from django.http import JsonResponse
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
@@ -25,7 +24,11 @@ class LoginSerializer(serializers.Serializer, PageNumberPagination):
         if user is not None:
             login(self.context['request'], user=user)
             token, created = Token.objects.get_or_create(user=user)
-            return {'token': token or None}
+            data = {
+                'token': token or None,
+                'username': user.username
+            }
+            return {"data", data}
         return {"token": None}
 
     class Meta:
