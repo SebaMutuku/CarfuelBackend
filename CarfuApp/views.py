@@ -1,19 +1,21 @@
 from datetime import datetime
 
+from django import get_version
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import HttpResponse
+from rest_framework import __version__ as drf_version
 from rest_framework import status, views
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
 from rest_framework.decorators import parser_classes
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.parsers import JSONParser, MultiPartParser
-from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from CarfuApp.serializers import OrderSerializer, CarSerializer, LoginSerializer, ReadUsers, RegisterSerializer
+from CarfuApp.serializers import OrderSerializer, CarSerializer, LoginSerializer, RegisterSerializer
 from . import models
 
 
@@ -189,3 +191,16 @@ class CarBrandsView(views.APIView):
     def get(self, request):
         serializer = CarSerializer(self.serializer_class.get_car_brands(), many=True)
         return Response({"message": "success", "responsePayload": serializer.data})
+
+
+class HealthCheckView(views.APIView):
+    renderer_classes = (JSONRenderer,)
+
+    def get(self, request, *args, **kwargs):
+        health_response = {
+            "message": "all good now",
+            "statusCode": status.HTTP_200_OK,
+            "django_version": get_version(),
+            "rest_framework_version": drf_version
+        }
+        return Response(health_response)

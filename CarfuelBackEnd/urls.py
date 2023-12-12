@@ -33,7 +33,8 @@ urlpatterns = [
     re_path('api/users/logout', views.Logout.as_view(), name='logout'),
     re_path('api/orders/createOrder', views.Order.as_view(), name='CreateOrder'),
     re_path('api/cars/allcars', views.CarsView.as_view(), name='cars'),
-    re_path('api/cars/carbrands', views.CarBrandsView.as_view(), name='carbrands')
+    re_path('api/cars/carbrands', views.CarBrandsView.as_view(), name='carbrands'),
+    re_path('health', views.HealthCheckView.as_view(), name='health')
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
