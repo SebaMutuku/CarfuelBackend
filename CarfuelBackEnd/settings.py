@@ -11,8 +11,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
-import dj_database_url
 
+import dj_database_url
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 from django.core.checks import templates
 
@@ -121,7 +121,11 @@ WSGI_APPLICATION = 'CarfuelBackEnd.wsgi.application'
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+    'default': dj_database_url.config(
+        default=os.environ.get("DATABASE_URL"),
+        conn_max_age=600
+    ),
+    'postgres': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': os.environ.get("DATABASE"),
         'USER': os.environ.get("USER"),
