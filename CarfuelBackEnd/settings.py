@@ -42,7 +42,8 @@ ENC_SALT = os.environ.get('ENC_SALT')
 REST_FRAMEWORK = {'DEFAULT_AUTHENTICATION_CLASSES':
     [
         'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.BasicAuthentication'
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ],
     'EXCEPTION_HANDLER': 'CarfuApp.utils.Exception.exceptionhandler'
 }

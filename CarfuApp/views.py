@@ -40,8 +40,7 @@ class Login(views.APIView):
     def post(self, request):
         serializer = self.serializer_class(data=request.data, context={'request': request})
         if serializer.is_valid(raise_exception=False):
-            data = serializer.validate(data=request.data)
-            print(f'Received data: {data}')
+            data = serializer.data.get("data", None)
             if data:
                 # Should generate token here
                 return Response({"payload": data, "message": "Successfully logged in"},
@@ -50,8 +49,8 @@ class Login(views.APIView):
 
     def get(self, request, pk):
         user = AuthUser.objects.filter(pk=pk).values('username', 'first_name', 'last_name', 'last_login', 'is_active',
-                                                 'date_joined', 'email', 'groups__permissions', 'is_superuser',
-                                                 'is_staff', 'user_permissions')
+                                                     'date_joined', 'email', 'groups__permissions', 'is_superuser',
+                                                     'is_staff', 'user_permissions')
         if user:
             return Response({"message": "User found", "payload": user}, status=status.HTTP_200_OK)
         return Response({"message": "User not found", "payload": None}, status=status.HTTP_404_NOT_FOUND)
