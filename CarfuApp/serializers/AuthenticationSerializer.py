@@ -18,14 +18,14 @@ class LoginSerializer(serializers.Serializer, PageNumberPagination):
     token = serializers.CharField(max_length=255, read_only=True)
 
     def validate(self, data):
-        user = authenticate(username=data.get("username"), password=data.get("password", None))
+        username = data.get("username")
+        password = data.get("password")
+        user = authenticate(username=username, password=password)
         if user is not None:
             login(self.context['request'], user=user)
             token, created = Token.objects.get_or_create(user=user)
-            data = {
-                'token': str(token) if token else None,
-                'username': str(user.username)
-            }
+            data["user"] = user
+            data["token"] = token
             return data
         return None
 

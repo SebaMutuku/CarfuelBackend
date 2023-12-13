@@ -40,9 +40,13 @@ class Login(views.APIView):
     def post(self, request):
         serializer = self.serializer_class(data=request.data, context={'request': request})
         if serializer.is_valid(raise_exception=False):
-            data = serializer.data.get("data", None)
-            if data:
-                # Should generate token here
+            user = serializer.validated_data['user']
+            token = serializer.validated_data['token']
+            if user and token:
+                data = {
+                    'username': str(user),
+                    'token': str(token),
+                }
                 return Response({"payload": data, "message": "Successfully logged in"},
                                 status=status.HTTP_200_OK)
         return Response({"payload": None, "message": "Invalid Credentials"}, status.HTTP_401_UNAUTHORIZED)

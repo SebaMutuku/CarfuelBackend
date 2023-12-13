@@ -42,8 +42,7 @@ ENC_SALT = os.environ.get('ENC_SALT')
 REST_FRAMEWORK = {'DEFAULT_AUTHENTICATION_CLASSES':
     [
         'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication'
     ],
     'EXCEPTION_HANDLER': 'CarfuApp.utils.Exception.exceptionhandler'
 }
@@ -134,8 +133,13 @@ DATABASES = {
         'PORT': '5432'
     }
 }
-
-DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql'
+# DATABASES = {
+# #     'default': {
+# #         'ENGINE': 'django.db.backends.sqlite3',
+# #         'NAME': 'mydatabase',  # This is where you put the name of the db file.
+# #         # If one doesn't exist, it will be created at migration time.
+# #     }
+# # }
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
@@ -154,8 +158,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-#MODELS
+# MODELS
 AUTH_USER_MODEL = 'CarfuApp.AuthUser'
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
