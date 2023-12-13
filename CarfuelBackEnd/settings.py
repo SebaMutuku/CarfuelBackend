@@ -133,6 +133,8 @@ DATABASES = {
         'PORT': '5432'
     }
 }
+
+DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql'
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
