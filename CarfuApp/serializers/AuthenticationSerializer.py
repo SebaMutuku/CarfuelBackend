@@ -21,13 +21,15 @@ class LoginSerializer(serializers.Serializer, PageNumberPagination):
         username = data.get("username")
         password = data.get("password")
         user = authenticate(username=username, password=password)
+        data["token"] = None
         if user is not None:
             login(self.context['request'], user=user)
             token, created = Token.objects.get_or_create(user=user)
             data["user"] = str(user)
             data["token"] = str(token)
             return data
-        return None
+        data["token"] = None
+        return data
 
     class Meta:
         fields = (
