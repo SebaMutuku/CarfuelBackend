@@ -33,7 +33,6 @@ MESSAGE_BIRD_URL = os.environ.get('MESSAGE_BIRD_URL')
 DEBUG = False
 # DEBUG = True
 
-# ALLOWED_HOSTS = ['carfueldjango.herokuapp.com', 'localhost:3000', ]
 # Encryption
 KEY_LENGTH = 32
 ENC_SECRET_KEY = os.environ.get('ENC_SECRET_KEY')
@@ -75,7 +74,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'CarfuelBackEnd.urls'
 CORS_ORIGIN_ALLOW_ALL = True
-ALLOWED_HOSTS = ['.vercel.app', 'localhost','django-backend-5kl5.onrender.com']
+ALLOWED_HOSTS = ['.vercel.app', 'localhost', 'django-backend-5kl5.onrender.com', '127.0.0.1']
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_METHODS = [
     "DELETE",
@@ -134,16 +133,6 @@ DATABASES = {
         'PORT': '5432'
     }
 }
-
-DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql'
-#
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': 'mydatabase', # This is where you put the name of the db file.
-#                  # If one doesn't exist, it will be created at migration time.
-#     }
-# }
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
@@ -162,6 +151,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
+#MODELS
+AUTH_USER_MODEL = 'CarfuApp.AuthUser'
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
@@ -190,4 +182,3 @@ STATIC_URL = '/staticfiles/'
 # Extra lookup directories for collectstatic to find static files
 #  Add configuration for static files storage using whitenoise
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-# DATABASES['default'].update(prod_db)

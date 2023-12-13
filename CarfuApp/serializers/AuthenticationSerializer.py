@@ -2,15 +2,13 @@ import json
 from typing import Optional
 
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
 from django.core import serializers as serialize
-from django.core.management import call_command
 from django.http import JsonResponse
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.pagination import PageNumberPagination
 
-from CarfuApp.models import UserModel
+from CarfuApp.models.models import UserManager, AuthUser
 
 
 class LoginSerializer(serializers.Serializer, PageNumberPagination):
@@ -36,7 +34,7 @@ class LoginSerializer(serializers.Serializer, PageNumberPagination):
             'username',
             'password'
         )
-        model = User
+        model = AuthUser
 
     @staticmethod
     def logout(request):
@@ -48,13 +46,14 @@ class RegisterSerializer(serializers.ModelSerializer, PageNumberPagination):
     password = serializers.CharField(max_length=128, min_length=8, write_only=True, )
 
     class Meta:
-        model = User
-        fields = ('email', 'password', 'username',)
+        model = AuthUser
+        fields = ('email', 'password', 'username', 'gender')
 
     def create(self, validated_data):
-        return UserModel().create_standard_user(username=validated_data['username'],
-                                                password=validated_data['password'],
-                                                email=validated_data['email'])
+        return UserManager().create_standard_user(username=validated_data['username'],
+                                                  password=validated_data['password'],
+                                                  email=validated_data['email'],
+                                                  gender=validated_data['gender'])
 
     def update(self, instance, validated_data):
         instance.save()
@@ -63,38 +62,24 @@ class RegisterSerializer(serializers.ModelSerializer, PageNumberPagination):
 
     @staticmethod
     def get_single_user(pk: int) -> Optional[JsonResponse]:
-        return User.objects.filter(pk=pk).values('username', 'first_name', 'last_name', 'last_login', 'is_active',
-                                                 'date_joined', 'email', 'groups__permissions', 'is_superuser',
-                                                 'is_staff', 'user_permissions') or None
+        return AuthUser.objects.filter(pk=pk).values('username', 'first_name', 'last_name', 'last_login', 'is_active',
+                                                     'date_joined', 'email', 'groups__permissions', 'is_superuser',
+                                                     'is_staff', 'user_permissions') or None
 
     @staticmethod
-    def get_all_users() -> tuple[list[User], None]:
-        return User.objects.all().order_by("date_joined").values('username', 'first_name',
-                                                                 'last_name', 'last_login',
-                                                                 'is_active',
-                                                                 'date_joined', 'email',
-                                                                 'groups__permissions',
-                                                                 'is_superuser',
-                                                                 'is_staff', 'user_permissions'), None
-
-    def create_super_user(self, validated_data):
-        try:
-            password = validated_data['password']
-            username = validated_data['username']
-            email = validated_data['email']
-            call_command('createsuperuser', interactive=False, username=username, email=email)
-            super_user = User.objects.get(username=username)
-            super_user.set_password(password)
-            super_user.save()
-            return super_user
-        except Exception as e:
-            print(e)
-            return None
+    def get_all_users() -> tuple[list[AuthUser], None]:
+        return AuthUser.objects.all().order_by("date_joined").values('username', 'first_name',
+                                                                     'last_name', 'last_login',
+                                                                     'is_active',
+                                                                     'date_joined', 'email',
+                                                                     'groups__permissions',
+                                                                     'is_superuser',
+                                                                     'is_staff', 'user_permissions'), None
 
 
 class ReadUsers(serializers.ModelSerializer):
     class Meta:
-        model = User
+        model = AuthUser
         read_only_fields = ['password']
         fields = (
             'id',
@@ -113,7 +98,7 @@ class ReadUsers(serializers.ModelSerializer):
 
     @staticmethod
     def get_user():
-        users = User.objects.all().defer("password")
+        users = AuthUser.objects.all().defer("password")
         if users is not None:
             return users
         else:

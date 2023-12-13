@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from django import get_version
-from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import HttpResponse
 from rest_framework import __version__ as drf_version
@@ -17,6 +16,7 @@ from rest_framework.views import APIView
 
 from CarfuApp.serializers import OrderSerializer, CarSerializer, LoginSerializer, RegisterSerializer
 from . import models
+from .models import AuthUser
 
 
 def index(request):
@@ -49,7 +49,7 @@ class Login(views.APIView):
         return Response({"payload": None, "message": "Invalid Credentials"}, status.HTTP_401_UNAUTHORIZED)
 
     def get(self, request, pk):
-        user = User.objects.filter(pk=pk).values('username', 'first_name', 'last_name', 'last_login', 'is_active',
+        user = AuthUser.objects.filter(pk=pk).values('username', 'first_name', 'last_name', 'last_login', 'is_active',
                                                  'date_joined', 'email', 'groups__permissions', 'is_superuser',
                                                  'is_staff', 'user_permissions')
         if user:
@@ -57,7 +57,7 @@ class Login(views.APIView):
         return Response({"message": "User not found", "payload": None}, status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, pk, format=None):
-        instance = User.objects.get(pk=pk, format=format)
+        instance = AuthUser.objects.get(pk=pk, format=format)
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             user = serializer.update(instance, validated_data=request.data)
@@ -73,7 +73,7 @@ class Logout(views.APIView):
 
     def post(self, request):
         username = request.data["username"]
-        user = User.objects.filter(Q(username=username) | Q(email=username))
+        user = AuthUser.objects.filter(Q(username=username) | Q(email=username))
         if (user.username is not None and user.username == username) or (
                 user.email is not None and user.email == username):
             return Response({"message": "User found"}, status=status.HTTP_200_OK)
@@ -83,7 +83,7 @@ class Logout(views.APIView):
 class Register(views.APIView, PageNumberPagination):
     permission_classes = (AllowAny,)
     authentication_classes = ([TokenAuthentication, BasicAuthentication])
-    querySet = User.objects.all()
+    querySet = AuthUser.objects.all()
     serializer_class = RegisterSerializer
     parser_classes(JSONParser, )
     pagination_class = PageNumberPagination

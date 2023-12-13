@@ -1,7 +1,8 @@
 import datetime
 
 from django.contrib.auth.base_user import BaseUserManager
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.utils import timezone
@@ -36,21 +37,52 @@ class AuthPermission(models.Model):
         unique_together = (('content_type', 'codename'),)
 
 
-class AuthUser(models.Model):
-    password = models.CharField(max_length=128)
-    last_login = models.DateTimeField(blank=True, null=True)
-    is_superuser = models.BooleanField()
-    username = models.CharField(unique=True, max_length=150)
-    first_name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=150)
-    phonenumber = models.CharField(max_length=20)
-    is_staff = models.BooleanField()
-    is_active = models.BooleanField()
-    date_joined = models.DateTimeField()
+class UserManager(BaseUserManager):
+    @staticmethod
+    def create_user(username, password, email=None, **extra_fields):
+        if not email:
+            raise ValidationError('Invalid email address')
+        user = AuthUser.objects.create(username=username, email=email, **extra_fields)
+        user.set_password(password)
+        user.created_on = datetime.datetime.now(tz=timezone.utc)
+        return user
 
-    class Meta:
-        managed = False
-        db_table = 'auth_user'
+    def create_superuser(self, password=None, username=None, email=None, gender=None):
+        user = self.create_user(username=username, password=password, email=self.normalize_email(email), gender=gender)
+        user.is_staff = True
+        user.is_admin = True
+        user.is_superuser = True
+        user.save()
+        return user
+
+    def create_standard_user(self, username=None, password=None, email=None, gender=None):
+        user = self.create_user(username=username, password=password, email=email, gender=gender)
+        user.is_admin = False
+        user.is_superuser = False
+        user.is_staff = False
+        user.save()
+        return user
+
+    def create_agent(self, username=None, password=None, email=None, gender=None):
+        user = self.create_user(username=username, password=password, email=email, gender=gender)
+        user.is_staff = True
+        user.is_admin = False
+        user.save()
+        return user
+
+
+class AuthUser(AbstractUser):
+    username = models.CharField(max_length=255, unique=True, null=False)
+    email = models.EmailField(unique=True)
+    phone_number = models.CharField(max_length=15, null=True, blank=True)
+    gender = models.CharField(max_length=1, choices=[('M', 'Male'), ('F', 'Female'), ('O', 'Other')], blank=True,
+                              null=True, default='O')
+    objects = UserManager()
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email', 'password', 'gender']
+
+    def __str__(self):
+        return self.username.format(self.email)
 
 
 class AuthUserGroups(models.Model):
@@ -220,7 +252,7 @@ class Oauth2ProviderRefreshtoken(models.Model):
 class Orders(models.Model):
     ordernumber = models.CharField(max_length=50)
     ordertime = models.DateTimeField()
-    customerid = models.OneToOneField(User, models.DO_NOTHING, db_column='pk')
+    customerid = models.OneToOneField(AuthUser, models.DO_NOTHING, db_column='pk')
     orderamount = models.FloatField()
     orderlocation = models.CharField(max_length=255)
     deliverytime = models.DateTimeField(blank=True, null=True)
@@ -240,7 +272,7 @@ class Registeredvehicles(models.Model):
     carcolor = models.CharField(max_length=50)
     carregnumber = models.CharField(max_length=50)
     registeredon = models.DateTimeField()
-    userid = models.OneToOneField(User, models.DO_NOTHING, db_column='pk', blank=True, null=True)
+    userid = models.OneToOneField(AuthUser, models.DO_NOTHING, db_column='pk', blank=True, null=True)
 
     class Meta:
         managed = True
@@ -267,39 +299,3 @@ class Cars(models.Model):
 
     def __str__(self):
         return self.make
-
-
-class UserModel(BaseUserManager):
-    @staticmethod
-    def create_user(username, password, email=None):
-        user = User.objects.create(username=username,
-                                   is_superuser=False,
-                                   is_staff=False,
-                                   is_active=True,
-                                   email=email)
-        user.set_password(password)
-        return user
-
-    def create_superuser(self, password=None, username=None, email=None):
-        user = self.create_user(username=username, password=password, email=email)
-        user.is_staff = False
-        user.is_admin = True
-        user.is_superuser = True
-        user.created_on = datetime.datetime.now(tz=timezone.utc)
-        user.save()
-        return user
-
-    def create_standard_user(self, username=None, password=None, email=None):
-        user = self.create_user(username=username, password=password, email=email)
-        user.is_admin = False
-        user.is_superuser = False
-        user.is_staff = False
-        user.save()
-        return user
-
-    def create_agent(self, username=None, password=None, email=None):
-        user = self.create_user(username=username, password=password, email=email)
-        user.is_staff = True
-        user.is_admin = False
-        user.save()
-        return user
