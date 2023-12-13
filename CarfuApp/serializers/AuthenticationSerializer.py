@@ -24,8 +24,8 @@ class LoginSerializer(serializers.Serializer, PageNumberPagination):
         if user is not None:
             login(self.context['request'], user=user)
             token, created = Token.objects.get_or_create(user=user)
-            data["user"] = user
-            data["token"] = token
+            data["user"] = str(user)
+            data["token"] = str(token)
             return data
         return None
 

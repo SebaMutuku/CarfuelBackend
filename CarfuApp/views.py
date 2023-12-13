@@ -44,8 +44,8 @@ class Login(views.APIView):
             token = serializer.validated_data['token']
             if user and token:
                 data = {
-                    'username': str(user),
-                    'token': str(token),
+                    'username': user,
+                    'token': token,
                 }
                 return Response({"payload": data, "message": "Successfully logged in"},
                                 status=status.HTTP_200_OK)
