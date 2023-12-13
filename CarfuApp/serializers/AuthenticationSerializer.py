@@ -29,6 +29,7 @@ class LoginSerializer(serializers.Serializer, PageNumberPagination):
             data["token"] = str(token)
             return data
         data["token"] = None
+        data["user"] = None
         return data
 
     class Meta:
