@@ -135,7 +135,7 @@ class TaskView(APIView):
     querySet = models.Task.objects.all()
     renderer_classes = (JSONRenderer,)
     serializer_class = TaskSerializer
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
     authentication_classes = (BasicAuthentication, TokenAuthentication)
     parser_classes(JSONParser, )
 
@@ -178,7 +178,7 @@ class ActivityView(views.APIView):
     querySet = models.TaskActivity.objects.all()
     renderer_classes = (JSONRenderer,)
     serializer_class = ActivitySerializer
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
     authentication_classes = ([BasicAuthentication, TokenAuthentication])
     parser_classes(MultiPartParser, )
 
