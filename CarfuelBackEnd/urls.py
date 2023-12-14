@@ -18,6 +18,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from django.urls import re_path
+from rest_framework.urlpatterns import format_suffix_patterns
 
 from CarfuApp import views
 from CarfuelBackEnd import settings
@@ -31,10 +32,14 @@ urlpatterns = [
     re_path('api/users/register', views.Register.as_view(), name='Register'),
     re_path('api/users/get', views.Register.as_view(), name='get_all_users'),
     re_path('api/users/logout', views.Logout.as_view(), name='logout'),
-    re_path('api/orders/createOrder', views.Order.as_view(), name='CreateOrder'),
-    re_path('api/cars/allcars', views.CarsView.as_view(), name='cars'),
-    re_path('api/cars/carbrands', views.CarBrandsView.as_view(), name='carbrands'),
+    re_path('api/tasks/create', views.TaskView.as_view(), name='create'),
+    re_path('api/tasks/update/<int:pk>/', views.TaskView.as_view(), name='task-update'),
+    re_path('api/tasks/alltasks', views.TaskView.as_view(), name='all-tasks'),
+    re_path('api/tasks/activity/create', views.ActivityView.as_view(), name='create'),
+    re_path('api/tasks/activity/update/<int:pk>', views.ActivityView.as_view(), name='activity-update'),
+    re_path('api/tasks/activity/allactivities', views.ActivityView.as_view(), name='all-activities'),
     re_path('health', views.HealthCheckView.as_view(), name='health')
 ]
+urlpatterns = format_suffix_patterns(urlpatterns)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

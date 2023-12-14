@@ -59,7 +59,6 @@ class RegisterSerializer(serializers.ModelSerializer, PageNumberPagination):
                                                   gender=validated_data['gender'])
 
     def update(self, instance, validated_data):
-        instance.save()
         super(RegisterSerializer, self).update(instance, validated_data)
         return json.loads(serialize.serialize('json', [instance])), None
 

@@ -249,34 +249,27 @@ class Oauth2ProviderRefreshtoken(models.Model):
         unique_together = (('token', 'revoked'),)
 
 
-class Orders(models.Model):
-    ordernumber = models.CharField(max_length=50)
-    ordertime = models.DateTimeField()
-    customerid = models.OneToOneField(AuthUser, models.DO_NOTHING, db_column='pk')
-    orderamount = models.FloatField()
-    orderlocation = models.CharField(max_length=255)
-    deliverytime = models.DateTimeField(blank=True, null=True)
-    orderdetails = models.CharField(max_length=255, blank=True, null=True)
-    orderstatus = models.CharField(max_length=50)
-    deliveryagent = models.CharField(max_length=50)
-
-    class Meta:
-        managed = False
-        db_table = 'orders'
-
-
-class Registeredvehicles(models.Model):
+class Task(models.Model):
     id = models.AutoField(primary_key=True)
-    carname = models.CharField(max_length=50)
-    carmodel = models.CharField(max_length=50)
-    carcolor = models.CharField(max_length=50)
-    carregnumber = models.CharField(max_length=50)
-    registeredon = models.DateTimeField()
-    userid = models.OneToOneField(AuthUser, models.DO_NOTHING, db_column='pk', blank=True, null=True)
+    expires_on = models.DateTimeField(auto_now=True)
+    status = models.CharField(choices=[('pending', 'Pending'), ('completed', 'Completed')], max_length=50)
+    title = models.CharField(max_length=255, blank=True, null=True)
+    description = models.CharField(max_length=10000)
 
-    class Meta:
-        managed = True
-        db_table = 'registeredvehicles'
+    def __str__(self):
+        return self.title
+
+
+class TaskActivity(models.Model):
+    id = models.AutoField(primary_key=True)
+    title = models.CharField(max_length=50)
+    description = models.CharField(max_length=10000)
+    expires_on = models.DateTimeField()
+    taskid = models.IntegerField(null=False, blank=False)
+    status = models.CharField(choices=[('pending', 'Pending'), ('completed', 'Completed')], max_length=50)
+
+    def __str__(self):
+        return self.title
 
 
 class Cars(models.Model):

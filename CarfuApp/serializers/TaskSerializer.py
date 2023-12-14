@@ -1,0 +1,59 @@
+from rest_framework import serializers
+
+from CarfuApp.models import Task, TaskActivity
+
+
+class TaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = ("title",
+                  "description",
+                  "status",
+                  "id",
+                  "expires_on")
+        model = Task
+
+    def create(self, validated_data):
+        task = Task.objects.create(**validated_data)
+        return task
+
+    def update(self, instance, validated_data):
+        updated_data = super(TaskSerializer, self).update(instance, **validated_data)
+        return updated_data
+
+    @staticmethod
+    def get_all_tasks():
+        tasks = Task.objects.all()
+        result_data = []
+        for task in tasks:
+            activities = TaskActivity.objects.filter(taskid=task.id)
+            task_data = TaskSerializer(task).data
+            task_data["activities"] = ActivitySerializer(activities, many=True).data
+            result_data.append(task_data)
+        return result_data
+
+
+class ActivitySerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = '__all__'
+        model = TaskActivity
+
+    def create(self, validated_data):
+        try:
+            task = Task.objects.get(id=validated_data['taskid'])
+            if task.id:
+                activity = TaskActivity.objects.create(**validated_data)
+                return activity
+            raise serializers.ValidationError("An error occurred during TaskActivity creation")
+        except Exception as e:
+            print(e)
+            raise serializers.ValidationError(f"Task with id {validated_data['taskid']} does not exist")
+
+    def update(self, instance, validated_data):
+        updated_task = super(ActivitySerializer, self).update(instance, validated_data)
+        return updated_task
+
+    @staticmethod
+    def get_all_task_activities():
+        activity_data = TaskActivity.objects.all()
+        data = ActivitySerializer(activity_data, many=True)
+        return data

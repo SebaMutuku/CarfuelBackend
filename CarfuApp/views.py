@@ -5,18 +5,19 @@ from django.db.models import Q
 from django.http import HttpResponse
 from rest_framework import __version__ as drf_version
 from rest_framework import status, views
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
+from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from rest_framework.decorators import parser_classes
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.parsers import JSONParser, MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
+from rest_framework.status import HTTP_404_NOT_FOUND
 from rest_framework.views import APIView
 
-from CarfuApp.serializers import OrderSerializer, CarSerializer, LoginSerializer, RegisterSerializer
+from CarfuApp.serializers import LoginSerializer, RegisterSerializer
 from . import models
-from .models import AuthUser
+from .serializers.TaskSerializer import TaskSerializer, ActivitySerializer
 
 
 def index(request):
@@ -52,15 +53,17 @@ class Login(views.APIView):
         return Response({"payload": None, "message": "Invalid Credentials"}, status.HTTP_401_UNAUTHORIZED)
 
     def get(self, request, pk):
-        user = AuthUser.objects.filter(pk=pk).values('username', 'first_name', 'last_name', 'last_login', 'is_active',
-                                                     'date_joined', 'email', 'groups__permissions', 'is_superuser',
-                                                     'is_staff', 'user_permissions')
+        user = models.AuthUser.objects.filter(pk=pk).values('username', 'first_name', 'last_name', 'last_login',
+                                                            'is_active',
+                                                            'date_joined', 'email', 'groups__permissions',
+                                                            'is_superuser',
+                                                            'is_staff', 'user_permissions')
         if user:
             return Response({"message": "User found", "payload": user}, status=status.HTTP_200_OK)
         return Response({"message": "User not found", "payload": None}, status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, pk, format=None):
-        instance = AuthUser.objects.get(pk=pk, format=format)
+        instance = models.AuthUser.objects.get(pk=pk, format=format)
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             user = serializer.update(instance, validated_data=request.data)
@@ -76,7 +79,7 @@ class Logout(views.APIView):
 
     def post(self, request):
         username = request.data["username"]
-        user = AuthUser.objects.filter(Q(username=username) | Q(email=username))
+        user = models.AuthUser.objects.filter(Q(username=username) | Q(email=username))
         if (user.username is not None and user.username == username) or (
                 user.email is not None and user.email == username):
             return Response({"message": "User found"}, status=status.HTTP_200_OK)
@@ -86,7 +89,7 @@ class Logout(views.APIView):
 class Register(views.APIView, PageNumberPagination):
     permission_classes = (AllowAny,)
     authentication_classes = ([TokenAuthentication, BasicAuthentication])
-    querySet = AuthUser.objects.all()
+    querySet = models.AuthUser.objects.all()
     serializer_class = RegisterSerializer
     parser_classes(JSONParser, )
     pagination_class = PageNumberPagination
@@ -128,11 +131,11 @@ class Register(views.APIView, PageNumberPagination):
                         status.HTTP_404_NOT_FOUND)
 
 
-class Order(APIView):
-    querySet = models.Orders.objects.all()
+class TaskView(APIView):
+    querySet = models.Task.objects.all()
     renderer_classes = (JSONRenderer,)
-    serializer_class = OrderSerializer
-    permission_classes = ([IsAuthenticated])
+    serializer_class = TaskSerializer
+    permission_classes = (AllowAny,)
     authentication_classes = (BasicAuthentication, TokenAuthentication)
     parser_classes(JSONParser, )
 
@@ -140,30 +143,42 @@ class Order(APIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         if serializer.is_valid():
-            order = serializer.create(request.data)
-            if order:
-                response = {"message": "Order Successful", "OrderDetails": serializer.data}
-                return Response(response, status=status.HTTP_200_OK)
-            response = {"message": "Order Failed", "OrderDetails": None}
+            serializer.save()
+            task = serializer.data
+            if task:
+                response = {"message": "Task saved successfully", "task": serializer.data}
+                return Response(response, status=status.HTTP_201_CREATED)
+            response = {"message": "Failed to save your Task", "task": None}
             return Response(response, status=status.HTTP_417_EXPECTATION_FAILED)
 
         else:
-            response = {"message": "Failed", "OrderDetails": None}
+            response = {"message": "Failed", "task": None}
             return Response(response, status=status.HTTP_200_OK)
 
     def get(self, request):
-        serializer = self.serializer_class
-        return Response({"message": "success", "responsePayload": serializer.data})
+        data = self.serializer_class.get_all_tasks()
+        if len(data) != 0:
+            response = {"message": "success", "payload": data}
+            return Response(response, status=status.HTTP_200_OK)
+        return Response({"message": "no tasks available", "payload": []}, status=HTTP_404_NOT_FOUND)
 
-    def update(self):
-        pass
+    def put(self, request):
+        serializer = self.serializer_class(data=request.data, )
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            task = serializer.data
+            if task:
+                response = {"message": "Task saved successfully", "task": serializer.data}
+                return Response(response, status=status.HTTP_200_OK)
+            response = {"message": "Failed to save your Task", "task": None}
+            return Response(response, status=status.HTTP_417_EXPECTATION_FAILED)
 
 
-class CarsView(views.APIView):
-    querySet = models.Cars.objects.all()
+class ActivityView(views.APIView):
+    querySet = models.TaskActivity.objects.all()
     renderer_classes = (JSONRenderer,)
-    serializer_class = CarSerializer
-    permission_classes = (IsAuthenticated,)
+    serializer_class = ActivitySerializer
+    permission_classes = (AllowAny,)
     authentication_classes = ([BasicAuthentication, TokenAuthentication])
     parser_classes(MultiPartParser, )
 
@@ -171,30 +186,31 @@ class CarsView(views.APIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         if serializer.is_valid():
-            created = serializer.saveCar(request.POST, request.FILES['image'])
-            if created:
-                response = {"message": "success"}
-                return Response(response, status=status.HTTP_202_ACCEPTED)
-        response = {"message": f"failed {serializer.error_messages}"}
+            serializer.save()
+            activity_data = serializer.data
+            if activity_data:
+                response = {"message": "Saved successfully", "activity": serializer.data}
+                return Response(response, status=status.HTTP_201_CREATED)
+        response = {"message": f"Failed {serializer.error_messages}"}
         return Response(response, status=status.HTTP_417_EXPECTATION_FAILED)
 
     def get(self, request):
-        serializer = CarSerializer(self.serializer_class.get_all_cars(), many=True,
-                                   context={"request": request})
-        response = {"message": "success", "responsePayload": serializer.data}
-        return Response(response, status=status.HTTP_200_OK)
+        serializer = self.serializer_class.get_all_task_activities()
+        if len(serializer.data) != 0:
+            response = {"message": "success", "payload": serializer.data}
+            return Response(response, status=status.HTTP_200_OK)
+        return Response({"message": "No data available", "payload": []}, status=HTTP_404_NOT_FOUND)
 
-
-class CarBrandsView(views.APIView):
-    renderer_classes = (JSONRenderer,)
-    serializer_class = CarSerializer
-    permission_classes = (IsAuthenticated,)
-    authentication_classes = (SessionAuthentication, BasicAuthentication)
-    parser_classes(JSONParser, )
-
-    def get(self, request):
-        serializer = CarSerializer(self.serializer_class.get_car_brands(), many=True)
-        return Response({"message": "success", "responsePayload": serializer.data})
+    def put(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            task = serializer.data
+            if task:
+                response = {"message": "Saved successfully", "taskActivity": serializer.data}
+                return Response(response, status=status.HTTP_200_OK)
+            response = {"message": "Failed to save your Task", "taskActivity": None}
+            return Response(response, status=status.HTTP_417_EXPECTATION_FAILED)
 
 
 class HealthCheckView(views.APIView):

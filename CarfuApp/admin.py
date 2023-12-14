@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Orders, Registeredvehicles
+from .models import Task, TaskActivity
 
 
 # @admin.register(Roles)
@@ -8,11 +8,11 @@ from .models import Orders, Registeredvehicles
 # 	list_display = [f.name for f in Roles._meta.fields]
 
 
-@admin.register(Orders)
+@admin.register(Task)
 class OrderAdmin(admin.ModelAdmin):
-	list_display = [f.name for f in Orders._meta.fields]
+    list_display = [f.name for f in Task._meta.fields]
 
 
-@admin.register(Registeredvehicles)
+@admin.register(TaskActivity)
 class RegisteredVehicleAdmin(admin.ModelAdmin):
-	list_display = [f.name for f in Registeredvehicles._meta.fields]
+    list_display = [f.name for f in TaskActivity._meta.fields]
