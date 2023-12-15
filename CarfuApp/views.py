@@ -160,7 +160,7 @@ class TaskView(APIView):
         if len(data) != 0:
             response = {"message": "success", "payload": data}
             return Response(response, status=status.HTTP_200_OK)
-        return Response({"message": "no tasks available", "payload": []}, status=HTTP_404_NOT_FOUND)
+        return Response({"message": "No tasks available", "payload": []}, status=HTTP_404_NOT_FOUND)
 
     def put(self, request):
         serializer = self.serializer_class(data=request.data, )
@@ -199,7 +199,7 @@ class ActivityView(views.APIView):
         if len(serializer.data) != 0:
             response = {"message": "success", "payload": serializer.data}
             return Response(response, status=status.HTTP_200_OK)
-        return Response({"message": "No data available", "payload": []}, status=HTTP_404_NOT_FOUND)
+        return Response({"message": "No activities available", "payload": []}, status=HTTP_404_NOT_FOUND)
 
     def put(self, request):
         serializer = self.serializer_class(data=request.data)

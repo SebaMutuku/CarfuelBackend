@@ -22,7 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = '2ttpza*b-b6%t4(r@8gp57yee9zwi$o)v*hbrrb*m=b36ji_-2'
 TWILIO_ACCOUNT_SID = os.environ.get('TWILIO_ACCOUNT_SID')
 TWILIO_ACCOUNT_TOKEN = os.environ.get('TWILIO_ACCOUNT_TOKEN')
 TWILIO_PHONE_NUMBER = os.environ.get('TWILIO_PHONE_NUMBER')
@@ -119,29 +119,29 @@ WSGI_APPLICATION = 'CarfuelBackEnd.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get("DATABASE_URL"),
-        conn_max_age=600
-    ),
-    'postgres': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ.get("DATABASE"),
-        'USER': os.environ.get("USER"),
-        'PASSWORD': os.environ.get("PASSWORD"),
-        'HOST': os.environ.get("HOST"),
-        'PORT': '5432'
-    }
-}
-
-DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql'
 # DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': 'mydatabase',  # This is where you put the name of the db file.
-#         # If one doesn't exist, it will be created at migration time.
+#     'default': dj_database_url.config(
+#         default=os.environ.get("DATABASE_URL"),
+#         conn_max_age=600
+#     ),
+#     'postgres': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': os.environ.get("DATABASE"),
+#         'USER': os.environ.get("USER"),
+#         'PASSWORD': os.environ.get("PASSWORD"),
+#         'HOST': os.environ.get("HOST"),
+#         'PORT': '5432'
 #     }
 # }
+#
+# DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql'
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'mydatabase',  # This is where you put the name of the db file.
+        # If one doesn't exist, it will be created at migration time.
+    }
+}
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
