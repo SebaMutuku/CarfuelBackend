@@ -75,11 +75,15 @@ class AuthUser(AbstractUser):
     username = models.CharField(max_length=255, unique=True, null=False)
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=15, null=True, blank=True)
-    gender = models.CharField(max_length=1, choices=[('M', 'Male'), ('F', 'Female'), ('O', 'Other')], blank=True,
+    gender = models.CharField(max_length=20, choices=[('Male', 'F'), ('Female', 'F'), ('Other', 'O')], blank=True,
                               null=True, default='O')
     objects = UserManager()
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email', 'password', 'gender']
+
+    class Meta:
+        managed = True
+        db_table = 'CarfuApp_authuser'
 
     def __str__(self):
         return self.username.format(self.email)
@@ -259,6 +263,10 @@ class Task(models.Model):
     def __str__(self):
         return self.title
 
+    class Meta:
+        managed = True
+        db_table = 'CarfuApp_task'
+
 
 class TaskActivity(models.Model):
     id = models.AutoField(primary_key=True)
@@ -270,6 +278,10 @@ class TaskActivity(models.Model):
 
     def __str__(self):
         return self.title
+
+    class Meta:
+        managed = True
+        db_table = 'CarfuApp_taskactivity'
 
 
 class Cars(models.Model):

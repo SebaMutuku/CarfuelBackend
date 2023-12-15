@@ -9,7 +9,7 @@ from .models import Task, TaskActivity
 
 
 @admin.register(Task)
-class OrderAdmin(admin.ModelAdmin):
+class TaskAdmin(admin.ModelAdmin):
     list_display = [f.name for f in Task._meta.fields]
 
 
