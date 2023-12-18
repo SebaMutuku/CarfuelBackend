@@ -30,8 +30,8 @@ MESSAGE_BIRD_ACCESS_KEY = os.environ.get('MESSAGE_BIRD_ACCESS_KEY')
 MESSAGE_BIRD_URL = os.environ.get('MESSAGE_BIRD_URL')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = False
-DEBUG = True
+DEBUG = False
+# DEBUG = True
 
 # Encryption
 KEY_LENGTH = 32
@@ -41,11 +41,12 @@ ENC_SALT = os.environ.get('ENC_SALT')
 # Application definition
 REST_FRAMEWORK = {'DEFAULT_AUTHENTICATION_CLASSES':
     [
-        'rest_framework.authentication.TokenAuthentication',
+        'CarfuApp.authentication.Authentication.UserTokenAuthentication',
         'rest_framework.authentication.BasicAuthentication'
     ],
     'EXCEPTION_HANDLER': 'CarfuApp.utils.Exception.exceptionhandler'
 }
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -54,7 +55,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'rest_framework.authtoken',
     'corsheaders',
     'rest_auth',
     'CarfuApp'
@@ -162,6 +162,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # MODELS
 AUTH_USER_MODEL = 'CarfuApp.AuthUser'
+AUTH_TOKEN_CLASSES = ('CarfuApp.AuthUserToken',)
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 

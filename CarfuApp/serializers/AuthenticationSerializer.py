@@ -1,14 +1,14 @@
 import json
+from datetime import timedelta
 from typing import Optional
 
 from django.contrib.auth import authenticate, login, logout
 from django.core import serializers as serialize
 from django.http import JsonResponse
 from rest_framework import serializers
-from rest_framework.authtoken.models import Token
 from rest_framework.pagination import PageNumberPagination
 
-from CarfuApp.models.models import UserManager, AuthUser
+from CarfuApp.models.models import UserManager, AuthUser, AuthUserToken
 
 
 class LoginSerializer(serializers.Serializer, PageNumberPagination):
@@ -22,14 +22,17 @@ class LoginSerializer(serializers.Serializer, PageNumberPagination):
         password = data.get("password")
         user = authenticate(username=username, password=password)
         data["token"] = None
+        data["expiry_date"] = None
+        data["user"] = None
         if user is not None:
             login(self.context['request'], user=user)
-            token, created = Token.objects.get_or_create(user=user)
+            token, created = AuthUserToken.objects.get_or_create(user=user)
+            token.expiry_date = token.created + timedelta(days=30)
+            token.save()
             data["user"] = str(user)
-            data["token"] = str(token)
+            data["token"] = str(token.key)
+            data["expiry_date"] = token.expiry_date
             return data
-        data["token"] = None
-        data["user"] = None
         return data
 
     class Meta:

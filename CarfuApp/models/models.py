@@ -3,9 +3,9 @@ import datetime
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
-from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.utils import timezone
+from rest_framework.authtoken.models import Token
 
 
 class AuthGroup(models.Model):
@@ -284,23 +284,8 @@ class TaskActivity(models.Model):
         db_table = 'CarfuApp_taskactivity'
 
 
-# class Cars(models.Model):
-#     id = models.AutoField(primary_key=True)
-#     make = models.CharField(blank=False, max_length=1000)
-#     model = models.CharField(max_length=1000)
-#     color = models.CharField(max_length=20)
-#     yom = models.CharField(max_length=4)
-#     mileage = models.CharField(blank=True, max_length=1000)
-#     sell_status = models.BooleanField(default=False, null=False)
-#     price = models.CharField(blank=False, max_length=1000)
-#     imageUrl = models.ImageField(upload_to="images/%Y/%m/%d", blank=True,
-#                                  validators=[FileExtensionValidator(['png', 'jpg', 'gif', 'jpeg'])])
-#     car_description = models.CharField(blank=True, max_length=1000)
-#     saved_on = models.DateTimeField()
-#
-#     class Meta:
-#         managed = True
-#         db_table = 'cars'
-#
-#     def __str__(self):
-#         return self.make
+class AuthUserToken(Token):
+    expiry_date = models.DateTimeField(null=True, blank=True)
+
+    def token_is_expired(self):
+        return self.expiry_date and timezone.now() > self.expiry_date

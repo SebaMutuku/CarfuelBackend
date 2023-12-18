@@ -5,7 +5,7 @@ from django.db.models import Q
 from django.http import HttpResponse
 from rest_framework import __version__ as drf_version
 from rest_framework import status, views
-from rest_framework.authentication import BasicAuthentication, TokenAuthentication
+from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import parser_classes
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.parsers import JSONParser, MultiPartParser
@@ -17,6 +17,7 @@ from rest_framework.views import APIView
 
 from CarfuApp.serializers import LoginSerializer, RegisterSerializer
 from . import models
+from .authentication.Authentication import UserTokenAuthentication
 from .serializers.TaskSerializer import TaskSerializer, ActivitySerializer
 
 
@@ -43,10 +44,12 @@ class Login(views.APIView):
         if serializer.is_valid(raise_exception=False):
             user = serializer.validated_data['user']
             token = serializer.validated_data['token']
+            token_expiry = serializer.validated_data['expiry_date']
             if user and token:
                 data = {
                     'username': user,
                     'token': token,
+                    'expiry_date': token_expiry
                 }
                 return Response({"payload": data, "message": "Successfully logged in"},
                                 status=status.HTTP_200_OK)
@@ -73,7 +76,7 @@ class Login(views.APIView):
 
 class Logout(views.APIView):
     permission_classes = ([IsAuthenticated])
-    authentication_classes = ([BasicAuthentication, TokenAuthentication])
+    authentication_classes = ([BasicAuthentication, UserTokenAuthentication])
     parser_classes(JSONParser, )
     serializer_class = LoginSerializer
 
@@ -88,7 +91,7 @@ class Logout(views.APIView):
 
 class Register(views.APIView, PageNumberPagination):
     permission_classes = (AllowAny,)
-    authentication_classes = ([TokenAuthentication, BasicAuthentication])
+    authentication_classes = ([UserTokenAuthentication, BasicAuthentication])
     querySet = models.AuthUser.objects.all()
     serializer_class = RegisterSerializer
     parser_classes(JSONParser, )
@@ -136,7 +139,7 @@ class TaskView(APIView):
     renderer_classes = (JSONRenderer,)
     serializer_class = TaskSerializer
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (BasicAuthentication, TokenAuthentication)
+    authentication_classes = (BasicAuthentication, UserTokenAuthentication)
     parser_classes(JSONParser, )
 
     def post(self, request):
@@ -179,7 +182,7 @@ class ActivityView(views.APIView):
     renderer_classes = (JSONRenderer,)
     serializer_class = ActivitySerializer
     permission_classes = (IsAuthenticated,)
-    authentication_classes = ([BasicAuthentication, TokenAuthentication])
+    authentication_classes = ([BasicAuthentication, UserTokenAuthentication])
     parser_classes(MultiPartParser, )
 
     def post(self, request):
