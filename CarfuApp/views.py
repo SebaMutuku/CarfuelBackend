@@ -45,11 +45,15 @@ class Login(views.APIView):
             user = serializer.validated_data['user']
             token = serializer.validated_data['token']
             token_expiry = serializer.validated_data['expiry_date']
+            email = serializer.validated_data['email']
+            user_id = serializer.validated_data['user_id']
             if user and token:
                 data = {
                     'username': user,
+                    'user_id': user_id,
+                    'email': email,
                     'token': token,
-                    'expiry_date': token_expiry
+                    'expiry_date': token_expiry,
                 }
                 return Response({"payload": data, "message": "Successfully logged in"},
                                 status=status.HTTP_200_OK)

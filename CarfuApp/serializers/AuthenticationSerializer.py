@@ -21,10 +21,11 @@ class LoginSerializer(serializers.Serializer, PageNumberPagination):
         username = data.get("username")
         password = data.get("password")
         user = authenticate(username=username, password=password)
+        validated_user = AuthUser.objects.get(username=username)
         data["token"] = None
         data["expiry_date"] = None
         data["user"] = None
-        if user is not None:
+        if user is not None and validated_user:
             login(self.context['request'], user=user)
             token, created = AuthUserToken.objects.get_or_create(user=user)
             token.expiry_date = token.created + timedelta(days=30)
@@ -32,6 +33,8 @@ class LoginSerializer(serializers.Serializer, PageNumberPagination):
             data["user"] = str(user)
             data["token"] = str(token.key)
             data["expiry_date"] = token.expiry_date
+            data["email"] = str(validated_user.email)
+            data["user_id"] = validated_user.id
             return data
         return data
 
