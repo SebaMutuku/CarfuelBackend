@@ -33,10 +33,12 @@ urlpatterns = [
     re_path('api/users/get', views.Register.as_view(), name='get_all_users'),
     re_path('api/users/logout', views.Logout.as_view(), name='logout'),
     re_path('api/tasks/create', views.TaskView.as_view(), name='create'),
-    re_path('api/tasks/update/<int:pk>/', views.TaskView.as_view(), name='task-update'),
+    re_path(r'^api/tasks/update/(?P<pk>\d+)/$', views.TaskView.as_view(), name='task-update'),
     re_path('api/tasks/alltasks', views.TaskView.as_view(), name='all-tasks'),
+    re_path(r'^api/tasks/delete/(?P<pk>\d+)/$', views.TaskView.as_view(), name='delete-task'),
     re_path('api/tasks/activity/create', views.ActivityView.as_view(), name='create'),
-    re_path('api/tasks/activity/update/<int:pk>', views.ActivityView.as_view(), name='activity-update'),
+    re_path(r'^api/tasks/activity/update/(?P<pk>\d+)/$', views.ActivityView.as_view(), name='update-activity'),
+    re_path(r'^api/tasks/activity/delete/(?P<pk>\d+)/$', views.ActivityView.as_view(), name='delete-activity'),
     re_path('api/tasks/activity/allactivities', views.ActivityView.as_view(), name='all-activities'),
     re_path('health', views.HealthCheckView.as_view(), name='health')
 ]

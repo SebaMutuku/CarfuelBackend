@@ -16,9 +16,9 @@ class TaskSerializer(serializers.ModelSerializer):
         task = Task.objects.create(**validated_data)
         return task
 
-    def update(self, instance, validated_data):
-        updated_data = super(TaskSerializer, self).update(instance, **validated_data)
-        return updated_data
+    def update(self, validated_data, pk):
+        task, created = Task.objects.update_or_create(id=pk, defaults=validated_data)
+        return task, created
 
     @staticmethod
     def get_all_tasks():
@@ -48,9 +48,9 @@ class ActivitySerializer(serializers.ModelSerializer):
             print(e)
             raise serializers.ValidationError(f"Task with id {validated_data['taskid']} does not exist")
 
-    def update(self, instance, validated_data):
-        updated_task = super(ActivitySerializer, self).update(instance, validated_data)
-        return updated_task
+    def update(self, validated_data, pk):
+        activity, created = TaskActivity.objects.update_or_create(id=pk, defaults=validated_data)
+        return activity, created
 
     @staticmethod
     def get_all_task_activities():

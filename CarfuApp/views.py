@@ -18,6 +18,7 @@ from rest_framework.views import APIView
 from CarfuApp.serializers import LoginSerializer, RegisterSerializer
 from . import models
 from .authentication.Authentication import UserTokenAuthentication
+from .models import Task, TaskActivity
 from .serializers.TaskSerializer import TaskSerializer, ActivitySerializer
 
 
@@ -169,16 +170,26 @@ class TaskView(APIView):
             return Response(response, status=status.HTTP_200_OK)
         return Response({"message": "No tasks available", "payload": []}, status=HTTP_404_NOT_FOUND)
 
-    def put(self, request):
+    def put(self, request, pk):
         serializer = self.serializer_class(data=request.data, )
         if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            task = serializer.data
+            task = serializer.update(request.data, pk)
             if task:
                 response = {"message": "Task saved successfully", "task": serializer.data}
                 return Response(response, status=status.HTTP_200_OK)
             response = {"message": "Failed to save your Task", "task": None}
             return Response(response, status=status.HTTP_417_EXPECTATION_FAILED)
+
+    def delete(self, request, pk):
+        try:
+            data = Task.objects.get(pk=pk)
+            if data:
+                data.delete()
+                return Response({"message": "Task deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            print(e)
+            return Response({"message": f"Task with id {pk} not found "},
+                            status=status.HTTP_417_EXPECTATION_FAILED)
 
 
 class ActivityView(views.APIView):
@@ -208,16 +219,26 @@ class ActivityView(views.APIView):
             return Response(response, status=status.HTTP_200_OK)
         return Response({"message": "No activities available", "payload": []}, status=HTTP_404_NOT_FOUND)
 
-    def put(self, request):
-        serializer = self.serializer_class(data=request.data)
+    def put(self, request, pk):
+        serializer = self.serializer_class(data=request.data, )
         if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            task = serializer.data
-            if task:
-                response = {"message": "Saved successfully", "taskActivity": serializer.data}
+            activity = serializer.update(request.data, pk)
+            if activity:
+                response = {"message": "Task saved successfully", "task": serializer.data}
                 return Response(response, status=status.HTTP_200_OK)
             response = {"message": "Failed to save your Task", "taskActivity": None}
             return Response(response, status=status.HTTP_417_EXPECTATION_FAILED)
+
+    def delete(self, request, pk):
+        try:
+            data = TaskActivity.objects.get(pk=pk)
+            self.serializer_class(data=data)
+            if data:
+                data.delete()
+                return Response({"message": "Activity deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            print(e)
+            return Response({"message": f"Activity with id {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class HealthCheckView(views.APIView):
