@@ -13,8 +13,7 @@ class TaskSerializer(serializers.ModelSerializer):
         model = Task
 
     def create(self, validated_data):
-        task = Task.objects.create(expires_on=validated_data["expires_on"], description=validated_data["description"],
-                                   title=validated_data["title"], status="pending")
+        task = Task.objects.create(**validated_data)
         return task
 
     def update(self, validated_data, pk):
