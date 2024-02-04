@@ -256,7 +256,8 @@ class Oauth2ProviderRefreshtoken(models.Model):
 class Task(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
     expires_on = models.DateTimeField(auto_now=True)
-    status = models.CharField(choices=[('pending', 'Pending'), ('completed', 'Completed')], max_length=50)
+    status = models.CharField(choices=[('pending', 'Pending'), ('completed', 'Completed')], max_length=50, null=True,
+                              default='pending')
     title = models.CharField(max_length=255, blank=True, null=True)
     description = models.CharField(max_length=10000)
 
@@ -274,7 +275,8 @@ class TaskActivity(models.Model):
     description = models.CharField(max_length=10000)
     expires_on = models.DateTimeField()
     taskid = models.IntegerField(null=False, blank=False)
-    status = models.CharField(choices=[('pending', 'Pending'), ('completed', 'Completed')], max_length=50,default="pending")
+    status = models.CharField(choices=[('pending', 'Pending'), ('completed', 'Completed')], max_length=50,
+                              default="pending")
 
     def __str__(self):
         return self.title
