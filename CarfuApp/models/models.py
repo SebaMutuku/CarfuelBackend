@@ -274,7 +274,7 @@ class TaskActivity(models.Model):
     description = models.CharField(max_length=10000)
     expires_on = models.DateTimeField()
     taskid = models.IntegerField(null=False, blank=False)
-    status = models.CharField(choices=[('pending', 'Pending'), ('completed', 'Completed')], max_length=50)
+    status = models.CharField(choices=[('pending', 'Pending'), ('completed', 'Completed')], max_length=50,default="pending")
 
     def __str__(self):
         return self.title
