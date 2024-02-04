@@ -8,6 +8,7 @@ class TaskSerializer(serializers.ModelSerializer):
         fields = ("title",
                   "description",
                   "status",
+                  "id",
                   "expires_on")
         model = Task
 
