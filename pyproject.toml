@@ -7,7 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-django = "4.2.5"
+django = "4.2.11"
 asgiref = "3.7.2"
 certifi = "2023.7.22"
 charset-normalizer = "3.2.0"
