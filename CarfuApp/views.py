@@ -14,6 +14,7 @@ from . import models
 from .authentication.Authentication import UserTokenAuthentication
 from .models import Task, TaskActivity
 from .serializers import TaskSerializer, ActivitySerializer
+from .utils.GenericResponse import GenericResponse
 
 
 def index(request):
@@ -35,7 +36,13 @@ class Login(views.APIView):
                 'token': serializer.validated_data['token'],
                 'expiry_date': serializer.validated_data['expiry_date'],
             }
-            return Response({"payload": data, "message": "Successfully logged in"}, status=status.HTTP_200_OK)
+            return Response(GenericResponse().create_generic_response(status_code=status.HTTP_200_OK,
+                                                                      message_code=status.HTTP_200_OK,
+                                                                      message_id=request.get("messageID"),
+                                                                      message_description="Successfully logged in",
+                                                                      error_description=None, error_code=None,
+                                                                      additional_data=[], primary_data=data),
+                            status=status.HTTP_200_OK)
         return Response({"payload": None, "message": "Invalid Credentials"}, status=status.HTTP_401_UNAUTHORIZED)
 
     def get(self, request, pk):

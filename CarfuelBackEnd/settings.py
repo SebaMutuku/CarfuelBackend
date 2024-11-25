@@ -46,7 +46,7 @@ REST_FRAMEWORK = {'DEFAULT_AUTHENTICATION_CLASSES':
         'CarfuApp.authentication.Authentication.UserTokenAuthentication',
         'rest_framework.authentication.BasicAuthentication'
     ],
-    'EXCEPTION_HANDLER': 'CarfuApp.utils.Exception.exceptionhandler'
+    'EXCEPTION_HANDLER': 'CarfuApp.exceptions.Exception.exceptionhandler'
 }
 
 INSTALLED_APPS = [
