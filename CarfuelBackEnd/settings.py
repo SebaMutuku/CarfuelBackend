@@ -15,6 +15,9 @@ import os
 import dj_database_url
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 from django.core.checks import templates
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -30,8 +33,7 @@ MESSAGE_BIRD_ACCESS_KEY = os.environ.get('MESSAGE_BIRD_ACCESS_KEY')
 MESSAGE_BIRD_URL = os.environ.get('MESSAGE_BIRD_URL')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-# DEBUG = True
+DEBUG = os.environ.get('DEBUG')
 
 # Encryption
 KEY_LENGTH = 32

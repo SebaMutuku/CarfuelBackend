@@ -3,12 +3,12 @@ from django.db import IntegrityError
 from rest_framework import status
 from rest_framework.exceptions import ValidationError, APIException, AuthenticationFailed
 from rest_framework.response import Response
-from rest_framework.views import exception_handler
+
+from CarfuApp.utils.GenericResponse import GenericResponse
 
 
 def exceptionhandler(exception, context):
-    response = exception_handler(exception, context)
-    print(f'Error desc [ {exception}  \nError response ----> {response}')
+    generic_response = GenericResponse()
 
     exception_map = {
         ValidationError: (status.HTTP_400_BAD_REQUEST, exception.args),
@@ -21,7 +21,12 @@ def exceptionhandler(exception, context):
 
     status_code, error_message = exception_map.get(type(exception),
                                                    (status.HTTP_500_INTERNAL_SERVER_ERROR, exception.args))
+    response = Response(generic_response.create_generic_response(status_code, message_code=status_code,
+                                                                 message_description=exception.args[0],
+                                                                 message_id=context.get('messageID'),
+                                                                 error_code=status_code,
+                                                                 error_description=exception.args[0],
+                                                                 additional_data=[],
+                                                                 primary_data=None), status=status_code)
 
-    return Response(
-        {'message': f'An error occurred while processing your request. {error_message}', 'status': status_code},
-        status=status_code)
+    return response
