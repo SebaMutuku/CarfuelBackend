@@ -29,13 +29,13 @@ class ApiTest(APITestCase):
     def test_get_users(self):
         users = AuthUser.objects.all()
         self.assertIsNotNone(users)
-#
+
 # def test_encoding(self):
 #     value = "seba"
 #     security = AESEncryption()
 #     # security.encrypt_value(value)
 #     self.assertEqual("sGVwYhy/Xo4wDMH1J+j8vDewnXgvVI432F6iE9JzOY=", security.encrypt_value(value))
-
+#
 # def test_decode(self):
 # 	value = "sGVwYhy/Xo4wDMH1J+j8vDewnXgvVI432F6iE9JzOY=".encode("ascii")
 # 	security = AESEncryption()

@@ -1,7 +1,7 @@
-from rest_framework.authentication import BaseAuthentication
+from rest_framework.authentication import TokenAuthentication
 
 
-class UserTokenAuthentication(BaseAuthentication):
+class UserTokenAuthentication(TokenAuthentication):
 
     def authenticate(self, request):
         from CarfuApp.models import AuthUserToken
