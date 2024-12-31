@@ -23,7 +23,7 @@ def exceptionhandler(exception, context):
                                                    (status.HTTP_500_INTERNAL_SERVER_ERROR, exception.args))
     response = Response(generic_response.create_generic_response(status_code, message_code=status_code,
                                                                  message_description=exception.args[0],
-                                                                 message_id=context.get('messageID'),
+                                                                 request=context["request"],
                                                                  error_code=status_code,
                                                                  error_description=exception.args[0],
                                                                  additional_data=[],

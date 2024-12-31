@@ -3,9 +3,11 @@ import uuid
 
 class GenericResponse:
     @staticmethod
-    def create_generic_response(status_code, message_id, message_code, message_description, error_code=None,
+    def create_generic_response(status_code, request, message_code, message_description, error_code=None,
                                 error_description=None,
                                 additional_data=None, primary_data=None):
+        message_id = str(uuid.uuid4())
+
         response = {
             "statusCode": status_code,
             "messageCode": message_code,

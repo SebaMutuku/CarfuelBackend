@@ -38,7 +38,7 @@ class Login(views.APIView):
             }
             return Response(GenericResponse().create_generic_response(status_code=status.HTTP_200_OK,
                                                                       message_code=status.HTTP_200_OK,
-                                                                      message_id=request.get("messageID"),
+                                                                      request=request,
                                                                       message_description="Successfully logged in",
                                                                       error_description=None, error_code=None,
                                                                       additional_data=[], primary_data=data),
@@ -99,7 +99,8 @@ class Register(views.APIView):
 
         users = self.serializer_class.get_all_users()
         return Response({"data": users, "message": "success"}, status=status.HTTP_200_OK)
-    def put(self,request):
+
+    def put(self, request):
         pass
 
 
