@@ -7,12 +7,14 @@ class GenericResponse:
                                 error_description=None,
                                 additional_data=None, primary_data=None):
         message_id = str(uuid.uuid4())
+        if request is not None and isinstance(request, dict):
+            message_id = request.get("messageId")
 
         response = {
             "statusCode": status_code,
             "messageCode": message_code,
             "messageDescription": message_description,
-            "messageID": message_id,
+            "messageId": message_id,
             "conversationID": str(uuid.uuid4()),
             "additionalData": additional_data if additional_data else [],
             "errorInfo": []

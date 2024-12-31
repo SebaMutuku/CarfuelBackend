@@ -41,7 +41,7 @@ class Login(views.APIView):
             }
             return Response(GenericResponse().create_generic_response(status_code=status.HTTP_200_OK,
                                                                       message_code=status.HTTP_200_OK,
-                                                                      request=request,
+                                                                      request=request.data,
                                                                       message_description="Successfully logged in",
                                                                       error_description=None, error_code=None,
                                                                       additional_data=[], primary_data=data),
