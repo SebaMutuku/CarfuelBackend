@@ -14,7 +14,7 @@ class UserTokenAuthentication(TokenAuthentication):
             verified_token = AuthUserToken.objects.get(key=token)
             user = verified_token.user
         except (AuthUserToken.DoesNotExist, IndexError, ValueError) as e:
-            raise AuthenticationFailed(f'Failed to authenticate with provided token: {e.args}')
+            raise AuthenticationFailed('Invalid token provided')
         return user, None
 
     def authenticate_header(self, request):

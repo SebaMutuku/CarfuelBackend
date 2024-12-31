@@ -2,7 +2,8 @@ import uuid
 
 
 class GenericResponse:
-    def create_generic_response(self, status_code, message_id, message_code, message_description, error_code=None,
+    @staticmethod
+    def create_generic_response(status_code, message_id, message_code, message_description, error_code=None,
                                 error_description=None,
                                 additional_data=None, primary_data=None):
         response = {
