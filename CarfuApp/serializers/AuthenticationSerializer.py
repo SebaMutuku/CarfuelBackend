@@ -5,6 +5,7 @@ from typing import Optional, List
 from django.contrib.auth import authenticate, login, logout
 from django.core import serializers as serialize
 from rest_framework import serializers
+from rest_framework.exceptions import AuthenticationFailed
 
 from CarfuApp.models.models import UserManager, AuthUser, AuthUserToken, DjangoSession
 
@@ -32,7 +33,7 @@ class LoginSerializer(serializers.Serializer):
                 "user": str(user)
             })
             return data
-        raise serializers.ValidationError("Invalid credentials.")
+        raise AuthenticationFailed("Invalid credentials.")
 
     @staticmethod
     def logout(request):

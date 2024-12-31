@@ -99,6 +99,8 @@ class Register(views.APIView):
 
         users = self.serializer_class.get_all_users()
         return Response({"data": users, "message": "success"}, status=status.HTTP_200_OK)
+    def put(self,request):
+        pass
 
 
 class TaskView(views.APIView):

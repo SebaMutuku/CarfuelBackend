@@ -18,6 +18,9 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from django.urls import re_path
+from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
+from rest_framework import permissions
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from CarfuApp import views
@@ -25,6 +28,18 @@ from CarfuelBackEnd import settings
 
 app_name = 'CarfuApp'
 
+schema_view = get_schema_view(
+   openapi.Info(
+      title="My API",
+      default_version='v1',
+      description="Test description",
+      terms_of_service="https://www.google.com/policies/terms/",
+      contact=openapi.Contact(email="contact@myapi.local"),
+      license=openapi.License(name="BSD License"),
+   ),
+   public=True,
+   permission_classes=(permissions.AllowAny,),
+)
 urlpatterns = [
     path('', include('CarfuApp.urls')),
     re_path(r'^admin/', admin.site.urls),
@@ -40,7 +55,8 @@ urlpatterns = [
     re_path(r'^api/tasks/activity/update/(?P<pk>\d+)/$', views.ActivityView.as_view(), name='update-activity'),
     re_path(r'^api/tasks/activity/delete/(?P<pk>\d+)/$', views.ActivityView.as_view(), name='delete-activity'),
     re_path('api/tasks/activity/allactivities', views.ActivityView.as_view(), name='all-activities'),
-    re_path('health', views.HealthCheckView.as_view(), name='health')
+    re_path('health', views.HealthCheckView.as_view(), name='health'),
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='swagger-ui'),
 ]
 urlpatterns = format_suffix_patterns(urlpatterns)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

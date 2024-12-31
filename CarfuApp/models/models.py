@@ -75,7 +75,7 @@ class AuthUser(AbstractUser):
     username = models.CharField(max_length=255, unique=True, null=False)
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=15, null=True, blank=True)
-    gender = models.CharField(max_length=20, choices=[('Male', 'F'), ('Female', 'F'), ('Other', 'O')], blank=True,
+    gender = models.CharField(max_length=20, choices=[('Male', 'M'), ('Female', 'F'), ('Other', 'O')], blank=True,
                               null=True)
     objects = UserManager()
     USERNAME_FIELD = 'username'

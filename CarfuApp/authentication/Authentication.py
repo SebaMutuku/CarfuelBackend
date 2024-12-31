@@ -18,4 +18,4 @@ class UserTokenAuthentication(TokenAuthentication):
         return user, None
 
     def authenticate_header(self, request):
-        return self.authenticate_header(request)
+        return self.authenticate(request)

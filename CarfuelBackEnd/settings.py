@@ -59,7 +59,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'rest_auth',
-    'CarfuApp'
+    'CarfuApp',
+    'drf_yasg'
 ]
 
 MIDDLEWARE = [
