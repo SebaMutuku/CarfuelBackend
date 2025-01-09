@@ -12,7 +12,6 @@ gunicorn==22.0.0
 idna==3.7
 packaging==23.2
 Pillow==10.0.1
-psycopg-binary==3.1.10
 psycopg2-binary==2.9.7
 pytz==2023.3.post1
 requests==2.32.0
@@ -22,6 +21,6 @@ typing_extensions==4.7.1
 urllib3==2.2.2
 whitenoise==6.5.0
 wrapt==1.15.0
-psycopg-binary==2.9.9
+psycopg-binary==3.1.12
 drf-yasg~=1.21.8
 python-dotenv~=1.0.1
