@@ -15,6 +15,9 @@ import os
 import dj_database_url
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 from django.core.checks import templates
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -30,8 +33,7 @@ MESSAGE_BIRD_ACCESS_KEY = os.environ.get('MESSAGE_BIRD_ACCESS_KEY')
 MESSAGE_BIRD_URL = os.environ.get('MESSAGE_BIRD_URL')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-# DEBUG = True
+DEBUG = os.environ.get('DEBUG')
 
 # Encryption
 KEY_LENGTH = 32
@@ -44,7 +46,7 @@ REST_FRAMEWORK = {'DEFAULT_AUTHENTICATION_CLASSES':
         'CarfuApp.authentication.Authentication.UserTokenAuthentication',
         'rest_framework.authentication.BasicAuthentication'
     ],
-    'EXCEPTION_HANDLER': 'CarfuApp.utils.Exception.exceptionhandler'
+    'EXCEPTION_HANDLER': 'CarfuApp.exceptions.Exception.exceptionhandler'
 }
 
 INSTALLED_APPS = [
@@ -57,7 +59,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'rest_auth',
-    'CarfuApp'
+    'CarfuApp',
+    'drf_yasg'
 ]
 
 MIDDLEWARE = [

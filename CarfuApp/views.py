@@ -1,11 +1,14 @@
 from datetime import datetime
 
 from django import get_version
+from django.contrib.auth import logout
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.shortcuts import render
-from rest_framework import __version__ as drf_version
+from rest_framework import __version__ as drf_version, serializers
 from rest_framework import status, views
 from rest_framework.authentication import BasicAuthentication
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
@@ -14,6 +17,7 @@ from . import models
 from .authentication.Authentication import UserTokenAuthentication
 from .models import Task, TaskActivity
 from .serializers import TaskSerializer, ActivitySerializer
+from .utils.GenericResponse import GenericResponse
 
 
 def index(request):
@@ -35,8 +39,14 @@ class Login(views.APIView):
                 'token': serializer.validated_data['token'],
                 'expiry_date': serializer.validated_data['expiry_date'],
             }
-            return Response({"payload": data, "message": "Successfully logged in"}, status=status.HTTP_200_OK)
-        return Response({"payload": None, "message": "Invalid Credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response(GenericResponse().create_generic_response(status_code=status.HTTP_200_OK,
+                                                                      message_code=status.HTTP_200_OK,
+                                                                      request=request.data,
+                                                                      message_description="Successfully logged in",
+                                                                      error_description=None, error_code=None,
+                                                                      additional_data=[], primary_data=data),
+                            status=status.HTTP_200_OK)
+        return AuthenticationFailed("Invalid login credentials")
 
     def get(self, request, pk):
         user = models.AuthUser.objects.filter(pk=pk).values(
@@ -45,8 +55,14 @@ class Login(views.APIView):
             'is_superuser', 'is_staff', 'user_permissions'
         ).first()
         if user:
-            return Response({"message": "User found", "payload": user}, status=status.HTTP_200_OK)
-        return Response({"message": "User not found", "payload": None}, status=status.HTTP_404_NOT_FOUND)
+            return Response(GenericResponse().create_generic_response(status_code=status.HTTP_200_OK,
+                                                                      message_code=status.HTTP_200_OK,
+                                                                      request=request,
+                                                                      message_description="Success",
+                                                                      error_description=None, error_code=None,
+                                                                      additional_data=[], primary_data=user),
+                            status=status.HTTP_200_OK)
+        return ObjectDoesNotExist("User not found")
 
     def put(self, request, pk):
         instance = models.AuthUser.objects.get(pk=pk)
@@ -65,8 +81,9 @@ class Logout(views.APIView):
         username = request.data.get("username")
         user = models.AuthUser.objects.filter(Q(username=username) | Q(email=username)).first()
         if user:
+            logout(request)
             return Response({"message": "User found"}, status=status.HTTP_200_OK)
-        return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+        return ObjectDoesNotExist("User does not exits or not logged in")
 
 
 class Register(views.APIView):
@@ -78,9 +95,14 @@ class Register(views.APIView):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response({"user": serializer.data, "message": "Successfully created user"},
+            return Response(GenericResponse().create_generic_response(status_code=status.HTTP_201_CREATED,
+                                                                      message_code=status.HTTP_201_CREATED,
+                                                                      request=request,
+                                                                      message_description="Successfully create user",
+                                                                      error_description=None, error_code=None,
+                                                                      additional_data=[], primary_data=serializer.data),
                             status=status.HTTP_201_CREATED)
-        return Response({"message": "User with that username exists"}, status=status.HTTP_208_ALREADY_REPORTED)
+        return serializers.ValidationError(f"Failed to add the user with errors {serializer.errors}")
 
     def get(self, request):
         pk = request.query_params.get("id")
@@ -88,10 +110,19 @@ class Register(views.APIView):
             user = self.serializer_class.get_single_user(pk)
             if user:
                 return Response({"data": user, "message": "success"}, status=status.HTTP_200_OK)
-            return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+            raise ObjectDoesNotExist(f"User with ID {pk} not found")
 
         users = self.serializer_class.get_all_users()
-        return Response({"data": users, "message": "success"}, status=status.HTTP_200_OK)
+        return Response(GenericResponse().create_generic_response(status_code=status.HTTP_200_OK,
+                                                                  message_code=status.HTTP_200_OK,
+                                                                  request=request,
+                                                                  message_description="Success",
+                                                                  error_description=None, error_code=None,
+                                                                  additional_data=[], primary_data=users),
+                        status=status.HTTP_200_OK)
+
+    def put(self, request):
+        pass
 
 
 class TaskView(views.APIView):
@@ -103,26 +134,50 @@ class TaskView(views.APIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response({"message": "Task saved successfully", "task": serializer.data}, status=status.HTTP_201_CREATED)
+        return Response(GenericResponse().create_generic_response(status_code=status.HTTP_201_CREATED,
+                                                                  message_code=status.HTTP_201_CREATED,
+                                                                  request=request,
+                                                                  message_description="Task saved successfully",
+                                                                  error_description=None, error_code=None,
+                                                                  additional_data=[], primary_data=serializer.data),
+                        status=status.HTTP_201_CREATED)
 
     def get(self, request):
         tasks = self.serializer_class.get_all_tasks()
-        return Response({"message": "success", "payload": tasks}, status=status.HTTP_200_OK)
+        return Response(GenericResponse().create_generic_response(status_code=status.HTTP_200_OK,
+                                                                  message_code=status.HTTP_200_OK,
+                                                                  request=request,
+                                                                  message_description="Success",
+                                                                  error_description=None, error_code=None,
+                                                                  additional_data=[], primary_data=tasks),
+                        status=status.HTTP_200_OK)
 
     def put(self, request, pk):
         task = Task.objects.get(pk=pk)
         serializer = self.serializer_class(task, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response({"message": "Task updated successfully", "task": serializer.data}, status=status.HTTP_200_OK)
+        return Response(GenericResponse().create_generic_response(status_code=status.HTTP_200_OK,
+                                                                  message_code=status.HTTP_200_OK,
+                                                                  request=request,
+                                                                  message_description="Success",
+                                                                  error_description=None, error_code=None,
+                                                                  additional_data=[], primary_data=serializer.data),
+                        status=status.HTTP_200_OK)
 
     def delete(self, request, pk):
         try:
             task = Task.objects.get(pk=pk)
             task.delete()
-            return Response({"message": "Task deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+            return Response(GenericResponse().create_generic_response(status_code=status.HTTP_200_OK,
+                                                                      message_code=status.HTTP_200_OK,
+                                                                      request=request,
+                                                                      message_description="Task deleted successfully",
+                                                                      error_description=None, error_code=None,
+                                                                      additional_data=[], primary_data=None),
+                            status=status.HTTP_200_OK)
         except Task.DoesNotExist:
-            return Response({"message": f"Task with id {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+            raise ObjectDoesNotExist(f"Task with that {pk} not found")
 
 
 class ActivityView(views.APIView):
@@ -134,28 +189,50 @@ class ActivityView(views.APIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response({"message": "Activity saved successfully", "activity": serializer.data},
+        return Response(GenericResponse().create_generic_response(status_code=status.HTTP_200_OK,
+                                                                  message_code=status.HTTP_200_OK,
+                                                                  request=request,
+                                                                  message_description="Activity saved successfully",
+                                                                  error_description=None, error_code=None,
+                                                                  additional_data=[], primary_data=serializer.data),
                         status=status.HTTP_201_CREATED)
 
     def get(self, request):
         activities = self.serializer_class.get_all_task_activities()
-        return Response({"message": "success", "payload": activities}, status=status.HTTP_200_OK)
+        return Response(GenericResponse().create_generic_response(status_code=status.HTTP_200_OK,
+                                                                  message_code=status.HTTP_200_OK,
+                                                                  request=request,
+                                                                  message_description="Success",
+                                                                  error_description=None, error_code=None,
+                                                                  additional_data=[], primary_data=activities),
+                        status=status.HTTP_200_OK)
 
     def put(self, request, pk):
         activity = TaskActivity.objects.get(pk=pk)
         serializer = self.serializer_class(activity, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response({"message": "Activity updated successfully", "activity": serializer.data},
+        return Response(GenericResponse().create_generic_response(status_code=status.HTTP_200_OK,
+                                                                  message_code=status.HTTP_200_OK,
+                                                                  request=request,
+                                                                  message_description="Activity updated successfully",
+                                                                  error_description=None, error_code=None,
+                                                                  additional_data=[], primary_data=serializer.data),
                         status=status.HTTP_200_OK)
 
     def delete(self, request, pk):
         try:
             activity = TaskActivity.objects.get(pk=pk)
             activity.delete()
-            return Response({"message": "Activity deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+            return Response(GenericResponse().create_generic_response(status_code=status.HTTP_200_OK,
+                                                                      message_code=status.HTTP_200_OK,
+                                                                      request=request,
+                                                                      message_description="Activity deleted successfully",
+                                                                      error_description=None, error_code=None,
+                                                                      additional_data=[], primary_data=activity),
+                            status=status.HTTP_200_OK)
         except TaskActivity.DoesNotExist:
-            return Response({"message": f"Activity with id {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+            raise ObjectDoesNotExist(f"Activity with id {pk} not found")
 
 
 class HealthCheckView(views.APIView):

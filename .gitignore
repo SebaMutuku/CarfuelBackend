@@ -3,3 +3,4 @@ venv/
 /CarfuelBackEnd/.env
 *.env
 *.mydatabase
+*.db.sqlite3

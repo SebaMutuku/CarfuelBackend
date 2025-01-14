@@ -1,7 +1,7 @@
-from rest_framework.authentication import BaseAuthentication
+from rest_framework.authentication import TokenAuthentication
 
 
-class UserTokenAuthentication(BaseAuthentication):
+class UserTokenAuthentication(TokenAuthentication):
 
     def authenticate(self, request):
         from CarfuApp.models import AuthUserToken
@@ -14,8 +14,8 @@ class UserTokenAuthentication(BaseAuthentication):
             verified_token = AuthUserToken.objects.get(key=token)
             user = verified_token.user
         except (AuthUserToken.DoesNotExist, IndexError, ValueError) as e:
-            raise AuthenticationFailed(f'Failed to authenticate with provided token: {e.args}')
+            raise AuthenticationFailed('Invalid token provided')
         return user, None
 
     def authenticate_header(self, request):
-        return self.authenticate_header(request)
+        return self.authenticate(request)

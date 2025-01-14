@@ -44,7 +44,7 @@ class UserManager(BaseUserManager):
             raise ValidationError('Invalid email address')
         user = AuthUser.objects.create(username=username, email=email, **extra_fields)
         user.set_password(password)
-        user.created_on = datetime.datetime.now(tz=timezone.utc)
+        user.created_on = datetime.datetime.now(tz=timezone.get_current_timezone())
         return user
 
     def create_superuser(self, password=None, username=None, email=None, gender=None):
@@ -75,7 +75,7 @@ class AuthUser(AbstractUser):
     username = models.CharField(max_length=255, unique=True, null=False)
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=15, null=True, blank=True)
-    gender = models.CharField(max_length=20, choices=[('Male', 'F'), ('Female', 'F'), ('Other', 'O')], blank=True,
+    gender = models.CharField(max_length=20, choices=[('Male', 'M'), ('Female', 'F'), ('Other', 'O')], blank=True,
                               null=True)
     objects = UserManager()
     USERNAME_FIELD = 'username'
